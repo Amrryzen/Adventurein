@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 3
   tags:
   - Ground
+  - Pushable
+  - Breakable
   layers:
   - Default
   - TransparentFX

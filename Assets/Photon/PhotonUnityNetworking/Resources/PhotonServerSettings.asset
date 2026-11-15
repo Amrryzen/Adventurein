@@ -50,6 +50,12 @@ MonoBehaviour:
   - RPC_Mulai
   - RPC_MatikanSemuaPemain
   - RPC_MintaMatiTim
+  - RPC_Hancurkan
+  - RPC_MintaLevel
+  - RPC_Pukulan
+  - RPC_SetLevel
+  - RPC_SkillAktif
+  - RPC_MintaHancurkan
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

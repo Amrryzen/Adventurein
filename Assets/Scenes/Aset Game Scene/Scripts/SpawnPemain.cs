@@ -10,8 +10,9 @@ public class SpawnPemain : MonoBehaviour
     {
         int i = (PhotonNetwork.LocalPlayer.ActorNumber - 1) % titikSpawn.Length;
         Transform spawn = titikSpawn[i];
+        string prefabKarakter = KarakterPemain.Ambil(PhotonNetwork.LocalPlayer, namaPrefab);
         GameObject pemain = PhotonNetwork.Instantiate(
-            namaPrefab,
+            prefabKarakter,
             spawn.position,
             spawn.rotation
         );
@@ -22,7 +23,7 @@ public class SpawnPemain : MonoBehaviour
         if (playerController == null)
         {
             Debug.LogError(
-                $"Prefab '{namaPrefab}' tidak memiliki PlayerController.",
+                $"Prefab '{prefabKarakter}' tidak memiliki PlayerController.",
                 pemain
             );
             return;
