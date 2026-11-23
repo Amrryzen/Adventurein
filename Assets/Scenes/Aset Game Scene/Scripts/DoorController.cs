@@ -2,6 +2,7 @@
 using Photon.Pun;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class DoorController : MonoBehaviourPun
 {
@@ -12,11 +13,16 @@ public class DoorController : MonoBehaviourPun
 
     [Header("UI")]
     [SerializeField] private TextMeshProUGUI teksPrompt;
+    [Header("Progresi Tes")]
+    [SerializeField] private int levelSesudahBuka = 0;
+    [SerializeField] private string namaSceneSesudahBuka = "";
+    [SerializeField] private float jedaPindahScene = 1f;
 
     private bool playerDiArea;
     private bool pintuTerbuka;
     private PlayerKeyState playerSaatIni;
     private Vector3 posisiAwal;
+    private bool pindahSceneSudahDiminta;
 
     private void Start()
     {
@@ -45,7 +51,7 @@ public class DoorController : MonoBehaviourPun
 
         if (!playerDiArea || pintuTerbuka) return;
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.F))
         {
             if (playerSaatIni == null) return;
 
@@ -83,7 +89,7 @@ public class DoorController : MonoBehaviourPun
             teksPrompt.gameObject.SetActive(!pintuTerbuka);
             teksPrompt.text = playerSaatIni != null &&
                               playerSaatIni.PunyaKunci
-                ? "Tekan SPACE untuk membuka pintu"
+                ? "Tekan F untuk membuka pintu"
                 : "Kamu membutuhkan kunci!";
         }
     }
@@ -150,6 +156,35 @@ public class DoorController : MonoBehaviourPun
                     Destroy(child.gameObject);
                 }
             }
+        }
+
+                if (levelSesudahBuka > 0)
+                {
+                    BiomeProgression progresi = BiomeProgression.Instance;
+                    if (progresi != null)
+                        progresi.MintaGantiLevel(levelSesudahBuka);
+                }
+
+                if (!string.IsNullOrEmpty(namaSceneSesudahBuka))
+                    StartCoroutine(PindahSceneTes());
+    }
+
+    private System.Collections.IEnumerator PindahSceneTes()
+    {
+        if (pindahSceneSudahDiminta)
+            yield break;
+
+        pindahSceneSudahDiminta = true;
+        yield return new WaitForSeconds(jedaPindahScene);
+
+        if (PhotonNetwork.InRoom)
+        {
+            if (PhotonNetwork.IsMasterClient)
+                PhotonNetwork.LoadLevel(namaSceneSesudahBuka);
+        }
+        else
+        {
+            SceneManager.LoadScene(namaSceneSesudahBuka);
         }
     }
 }

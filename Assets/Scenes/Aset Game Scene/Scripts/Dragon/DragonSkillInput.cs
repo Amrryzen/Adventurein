@@ -8,10 +8,14 @@ using UnityEngine;
 public class DragonSkillInput : MonoBehaviour
 {
     [SerializeField] private KeyCode tombolSkill = KeyCode.E;
+    [SerializeField] private KeyCode tombolSmash = KeyCode.Q;
+    [SerializeField] private KeyCode tombolSteelSkin = KeyCode.C;
 
     public bool Ditekan { get; private set; }   // frame saat tombol baru ditekan
     public bool Ditahan { get; private set; }   // selama tombol ditahan
     public bool Dilepas { get; private set; }   // frame saat tombol dilepas (atau input terkunci)
+    public bool DitekanSmash { get; private set; }
+    public bool DitekanSteelSkin { get; private set; }
     public float Horizontal { get; private set; } // -1, 0, atau 1
 
     public void Sampel()
@@ -23,6 +27,8 @@ public class DragonSkillInput : MonoBehaviour
         Ditahan = boleh && Input.GetKey(tombolSkill);
         Ditekan = boleh && Input.GetKeyDown(tombolSkill);
         Dilepas = sebelumnya && !Ditahan;
+        DitekanSmash = boleh && Input.GetKeyDown(tombolSmash);
+        DitekanSteelSkin = boleh && Input.GetKeyDown(tombolSteelSkin);
 
         float raw = boleh ? Input.GetAxisRaw("Horizontal") : 0f;
         Horizontal = Mathf.Abs(raw) > 0.3f ? Mathf.Sign(raw) : 0f;

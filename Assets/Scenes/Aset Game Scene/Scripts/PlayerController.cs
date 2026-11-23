@@ -1,4 +1,5 @@
 using System.Collections;
+using UnityEngine.SceneManagement;
 using Photon.Pun;
 using TMPro;
 using UnityEngine;
@@ -40,6 +41,7 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
     private float arahHadap = 1f;
 
     public bool TahanLompat => photonView.IsMine && Input.GetButton("Jump");
+    public bool KontrolFisikaDilepas { get; set; }
 
     private void Awake()
     {
@@ -102,6 +104,8 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
             rb.linearVelocity = Vector3.zero;
             return;
         }
+
+        if (KontrolFisikaDilepas) return;
 
         grounded = CekTanah();
 
@@ -171,6 +175,47 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
         Vector3 v = rb.linearVelocity;
         v.y = kekuatan;
         rb.linearVelocity = v;
+    }
+
+    public void MintaRestartStage()
+    {
+        if (!PhotonNetwork.InRoom)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            return;
+        }
+
+        photonView.RPC(
+            nameof(RPC_MintaRestartStage),
+            RpcTarget.MasterClient,
+            SceneManager.GetActiveScene().name);
+    }
+
+    [PunRPC]
+    private void RPC_MintaRestartStage(string namaScene, PhotonMessageInfo info)
+    {
+        if (!PhotonNetwork.IsMasterClient ||
+            info.Sender == null ||
+            info.Sender.ActorNumber != photonView.OwnerActorNr)
+        {
+            return;
+        }
+
+        PhotonNetwork.RemoveBufferedRPCs();
+        photonView.RPC(nameof(RPC_RestartSemuaPemain), RpcTarget.All, namaScene);
+    }
+
+    [PunRPC]
+    private void RPC_RestartSemuaPemain(string namaScene)
+    {
+        Time.timeScale = 1f;
+        PlayerController.InputDikunci = false;
+        PlayerController.PermainanSelesai = false;
+
+        if (PhotonNetwork.InRoom)
+            PhotonNetwork.LoadLevel(namaScene);
+        else
+            SceneManager.LoadScene(namaScene);
     }
 
     private IEnumerator AlurMati()

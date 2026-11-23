@@ -15,17 +15,22 @@ public class DragonPushSkill : DragonSkillBase
     [Tooltip("Newton. Kira-kira massa objek x percepatan yang diinginkan.")]
     [SerializeField] private float gayaDorong = 600f;
     [SerializeField] private float kecepatanMaks = 2.5f;
+    [SerializeField] private float gayaTarik = 500f;
 
     private PushableObject target;
     private float arahDorong;
     private bool mendorong;
+    private bool menarik;
+    private bool aksiAktif;
+    private float arahTarik;
     private bool sudahPeringatan;
 
     public override void OnUpdateSkill()
     {
         PushableObject kandidat = null;
+        bool aksiDitekan = Masukan.Ditahan;
 
-        if (Masukan.Ditahan && Masukan.Horizontal != 0f &&
+        if (aksiDitekan &&
             Fisik.TryCariTerdekat(tagPushable, jangkauan, out Collider kol))
         {
             kandidat = kol.GetComponentInParent<PushableObject>();
@@ -36,26 +41,53 @@ public class DragonPushSkill : DragonSkillBase
             }
             else
             {
-                // Hanya mendorong jika Dragon berjalan MENUJU objek.
-                float arahKeObjek = Mathf.Sign(kandidat.transform.position.x - transform.position.x);
-                if (arahKeObjek != Masukan.Horizontal) kandidat = null;
+                if (Masukan.Horizontal == 0f)
+                    kandidat = null;
+                else
+                    arahTarik = Masukan.Horizontal;
             }
         }
 
         if (target != kandidat && target != null)
+        {
+            DragonDebug.Log("Push berhenti");
             target.LepasKendali();
+        }
 
+        bool mulaiBaru = target == null && kandidat != null;
         target = kandidat;
         arahDorong = Masukan.Horizontal;
+        if (target != null)
+        {
+            float arahKeObjek = Mathf.Sign(target.transform.position.x - transform.position.x);
+            menarik = arahKeObjek != arahTarik;
+        }
+        else
+        {
+            menarik = false;
+        }
 
-        if (target != null) target.AmbilKendali();
-        SetMendorong(target != null);
+        mendorong = Masukan.Ditahan && target != null && !menarik;
+
+        if (target != null)
+        {
+            if (mulaiBaru)
+                DragonDebug.Log(menarik
+                    ? $"Tarik mulai pada '{target.name}'"
+                    : $"Push mulai pada '{target.name}'");
+            target.AmbilKendali();
+        }
+        SetMendorong(mendorong || menarik);
     }
 
     public override void OnFixedUpdateSkill()
     {
-        if (!mendorong || target == null || !target.AdaKendali) return;
-        Fisik.DorongTarget(target.Body, arahDorong, gayaDorong, kecepatanMaks);
+        if ((!mendorong && !menarik) || target == null || !target.AdaKendali) return;
+
+        if (menarik)
+            Fisik.DorongTarget(target.Body, arahTarik, gayaTarik, kecepatanMaks);
+        else
+            Fisik.DorongTarget(target.Body, arahDorong, gayaDorong, kecepatanMaks);
     }
 
     public override void OnKeluar()
@@ -67,8 +99,8 @@ public class DragonPushSkill : DragonSkillBase
 
     private void SetMendorong(bool nilai)
     {
-        if (mendorong == nilai) return;
-        mendorong = nilai;
+        if (aksiAktif == nilai) return;
+        aksiAktif = nilai;
         Jaringan.KirimSkillAktif(Tipe, nilai);
     }
 

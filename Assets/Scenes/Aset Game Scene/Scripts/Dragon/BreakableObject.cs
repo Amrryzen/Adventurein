@@ -39,8 +39,22 @@ public class BreakableObject : MonoBehaviourPun
             return;
         }
 
+        if (!PemainAdalahDragon(info.Sender))
+            return;
+
         pengumumanHancurTerkirim = true;
         photonView.RPC(nameof(RPC_Hancurkan), RpcTarget.AllBuffered);
+    }
+
+    private static bool PemainAdalahDragon(Photon.Realtime.Player pemain)
+    {
+        if (pemain == null)
+            return false;
+
+        if (!pemain.CustomProperties.TryGetValue(KarakterPemain.Kunci, out object nilai))
+            return true;
+
+        return !(nilai is string nama) || string.Equals(nama, "Dragon", System.StringComparison.OrdinalIgnoreCase);
     }
 
     [PunRPC]
@@ -50,6 +64,7 @@ public class BreakableObject : MonoBehaviourPun
         sudahHancur = true;
         permintaanHancurTerkirim = true;
         pengumumanHancurTerkirim = true;
+        DragonDebug.Log($"'{gameObject.name}' hancur (dikonfirmasi RPC)");
 
         if (vfxHancur != null)
         {

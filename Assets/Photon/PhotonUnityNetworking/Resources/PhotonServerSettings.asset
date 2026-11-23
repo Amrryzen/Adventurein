@@ -56,6 +56,13 @@ MonoBehaviour:
   - RPC_SetLevel
   - RPC_SkillAktif
   - RPC_MintaHancurkan
+  - RPC_MintaRespawnPushable
+  - RPC_MintaRestartStage
+  - RPC_RestartSemuaPemain
+  - RPC_SembunyikanPushable
+  - RPC_SutraLepas
+  - RPC_SutraTerpasang
+  - RPC_TampilkanPushable
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

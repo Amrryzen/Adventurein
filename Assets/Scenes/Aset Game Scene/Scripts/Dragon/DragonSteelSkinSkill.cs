@@ -20,11 +20,11 @@ public class DragonSteelSkinSkill : DragonSkillBase
     {
         if (modeToggle)
         {
-            if (Masukan.Ditekan) Atur(!Aktif);
+            if (Masukan.DitekanSteelSkin) Atur(!Aktif);
         }
         else
         {
-            if (Masukan.Ditekan) Atur(true);
+            if (Masukan.DitekanSteelSkin) Atur(true);
             else if (Masukan.Dilepas) Atur(false);
         }
     }
@@ -37,13 +37,15 @@ public class DragonSteelSkinSkill : DragonSkillBase
     private void Atur(bool aktif)
     {
         if (aktif == Aktif) return;
-        if (aktif && !bolehDiUdara && !Fisik.MenyentuhTanah()) return;
+        if (aktif && !bolehDiUdara && !Fisik.MenyentuhTanah())
+        {
+            DragonDebug.Log("Steel Skin ditolak: Dragon di udara");
+            return;
+        }
 
         Aktif = aktif;
         Fisik.KunciBadan(aktif, pengaliMassa);
         Jaringan.KirimSkillAktif(Tipe, aktif);
 
-        // OPSIONAL (butuh patch kecil di PlayerController, lihat penjelasan):
-        // GetComponent<PlayerController>().GerakDikunci = aktif;
     }
 }

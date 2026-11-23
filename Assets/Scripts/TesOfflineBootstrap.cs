@@ -3,14 +3,32 @@ using UnityEngine;
 
 public class TesOfflineBootstrap : MonoBehaviourPunCallbacks
 {
-    [SerializeField] private string karakter = "Dragon";
+    [SerializeField] private string karakterTes = "Limau";
     [SerializeField] private GameObject spawner;
+    private bool spawnerSudahAktif;
+
+    private void Awake()
+    {
+        PlayerController.InputDikunci = false;
+        PlayerController.PermainanSelesai = false;
+    }
 
     private void Start()
     {
+        if (PhotonNetwork.IsConnected)
+        {
+            return;
+        }
+
         PhotonNetwork.OfflineMode = true;
         PhotonNetwork.NickName = "Tester";
-        KarakterPemain.Set(karakter);
+        KarakterPemain.Set(karakterTes);
+
+        if (PhotonNetwork.InRoom)
+        {
+            AktifkanSpawner();
+            return;
+        }
 
         if (!PhotonNetwork.CreateRoom("tes"))
         {
@@ -20,6 +38,14 @@ public class TesOfflineBootstrap : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
+        AktifkanSpawner();
+    }
+
+    private void AktifkanSpawner()
+    {
+        if (spawnerSudahAktif)
+            return;
+
         if (spawner == null)
         {
             Debug.LogError("GameObject Spawner belum diatur pada TesOfflineBootstrap.", this);
@@ -27,6 +53,7 @@ public class TesOfflineBootstrap : MonoBehaviourPunCallbacks
         }
 
         spawner.SetActive(true);
+        spawnerSudahAktif = true;
     }
 
     public override void OnCreateRoomFailed(short returnCode, string message)

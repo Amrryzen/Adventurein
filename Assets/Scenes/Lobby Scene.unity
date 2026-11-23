@@ -95,60 +95,6 @@ LightmapSettings:
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 20201, guid: 0000000000000000f000000000000000, type: 0}
   m_LightingSettings: {fileID: 0}
---- !u!1 &95000101
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 95000102}
-  - component: {fileID: 95000103}
-  m_Layer: 0
-  m_Name: GameAudio
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &95000102
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 95000101}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &95000103
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 95000101}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a119bcfa2ff94670b7296128e67d0301, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GameAudio
-  lobbyBgm: {fileID: 8300000, guid: 15dbac77b4df51540875325611fc790d, type: 3}
-  gameBgm: {fileID: 8300000, guid: 8f03d63f41fa24d4a8b75ee7d97e8d00, type: 3}
-  walk: {fileID: 8300000, guid: f27fb1c6a3e296646b59b4f31d160de3, type: 3}
-  jump: {fileID: 8300000, guid: 49309f0cf511adc4ba7b2ecf2b9cc7b5, type: 3}
-  death: {fileID: 8300000, guid: 8fa1a26f39a9ae44da7917b29450effc, type: 3}
-  keyPickup: {fileID: 8300000, guid: a8b7bea3b420a184084c058da4ef2744, type: 3}
-  gateOpen: {fileID: 8300000, guid: c593cf7f7c7891c45a16743c36a61cc3, type: 3}
-  win: {fileID: 8300000, guid: 3ca4b16d97454ba43a8799d8c3537834, type: 3}
-  bouncer: {fileID: 8300000, guid: feb0926a035406440b04eefdd8dd5a7a, type: 3}
-  buttonTap: {fileID: 8300000, guid: 65fd0fe9b344c3e418841574596cdf86, type: 3}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -340,7 +286,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.067, y: 0.08440512}
   m_AnchorMax: {x: 0.37300003, y: 0.21351278}
-  m_AnchoredPosition: {x: 5.005249, y: -9.747559}
+  m_AnchoredPosition: {x: 5.0058594, y: -9.747559}
   m_SizeDelta: {x: 1.8532104, y: 2.3478699}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &91055931
@@ -449,6 +395,66 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 91055929}
   m_CullTransparentMesh: 1
+--- !u!1 &95000101
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 95000102}
+  - component: {fileID: 95000103}
+  m_Layer: 0
+  m_Name: GameAudio
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &95000102
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 95000101}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &95000103
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 95000101}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a119bcfa2ff94670b7296128e67d0301, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameAudio
+  musicSlider: {fileID: 0}
+  sfxSlider: {fileID: 0}
+  musicMuteButton: {fileID: 0}
+  sfxMuteButton: {fileID: 0}
+  musicButtonText: {fileID: 0}
+  sfxButtonText: {fileID: 0}
+  lobbyBgm: {fileID: 8300000, guid: 15dbac77b4df51540875325611fc790d, type: 3}
+  gameBgm: {fileID: 8300000, guid: 8f03d63f41fa24d4a8b75ee7d97e8d00, type: 3}
+  walk: {fileID: 8300000, guid: f27fb1c6a3e296646b59b4f31d160de3, type: 3}
+  jump: {fileID: 8300000, guid: 49309f0cf511adc4ba7b2ecf2b9cc7b5, type: 3}
+  death: {fileID: 8300000, guid: 8fa1a26f39a9ae44da7917b29450effc, type: 3}
+  keyPickup: {fileID: 8300000, guid: a8b7bea3b420a184084c058da4ef2744, type: 3}
+  gateOpen: {fileID: 8300000, guid: c593cf7f7c7891c45a16743c36a61cc3, type: 3}
+  win: {fileID: 8300000, guid: 3ca4b16d97454ba43a8799d8c3537834, type: 3}
+  bouncer: {fileID: 8300000, guid: feb0926a035406440b04eefdd8dd5a7a, type: 3}
+  buttonTap: {fileID: 8300000, guid: 65fd0fe9b344c3e418841574596cdf86, type: 3}
 --- !u!1 &119784806
 GameObject:
   m_ObjectHideFlags: 0
@@ -2803,12 +2809,6 @@ MonoBehaviour:
     - m_Text: 2
       m_Image: {fileID: 0}
       m_Color: {r: 1, g: 1, b: 1, a: 1}
-    - m_Text: 3
-      m_Image: {fileID: 0}
-      m_Color: {r: 1, g: 1, b: 1, a: 1}
-    - m_Text: 4
-      m_Image: {fileID: 0}
-      m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -3229,8 +3229,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 3036676095
-  m_fontColor: {r: 1, g: 1, b: 1, a: 0.7058824}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:

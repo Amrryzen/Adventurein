@@ -21,7 +21,11 @@ public class DragonSkillNetwork : MonoBehaviourPunCallbacks
 
     private readonly bool[] statusAktif = new bool[4];
 
-    public bool IsAktif(DragonSkillType tipe) => statusAktif[(int)tipe];
+    public bool IsAktif(DragonSkillType tipe)
+    {
+        int i = (int)tipe;
+        return i >= 1 && i < statusAktif.Length && statusAktif[i];
+    }
 
     // ---------------- API untuk owner ----------------
 

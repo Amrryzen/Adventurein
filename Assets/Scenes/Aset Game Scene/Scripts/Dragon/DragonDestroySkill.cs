@@ -25,8 +25,17 @@ public class DragonDestroySkill : DragonSkillBase
 
     public override void OnUpdateSkill()
     {
-        if (!Masukan.Ditekan || Time.time < cooldownSelesai) return;
-        if (!Fisik.TryCariTerdekat(tagBreakable, jangkauan, out Collider kol)) return;
+        if (!Masukan.DitekanSmash) return;
+        if (Time.time < cooldownSelesai)
+        {
+            DragonDebug.Log($"Destroy ditolak: cooldown {(cooldownSelesai - Time.time):0.00} detik");
+            return;
+        }
+        if (!Fisik.TryCariTerdekat(tagBreakable, jangkauan, out Collider kol))
+        {
+            DragonDebug.Log("Destroy ditolak: tidak ada objek 'Breakable' dalam jangkauan");
+            return;
+        }
 
         BreakableObject target = kol.GetComponentInParent<BreakableObject>();
         if (target == null)
@@ -36,6 +45,7 @@ public class DragonDestroySkill : DragonSkillBase
         }
 
         cooldownSelesai = Time.time + cooldown;
+        DragonDebug.Log($"Destroy mengenai '{kol.name}'");
         Jaringan.KirimPukulan(kol.bounds.ClosestPoint(Fisik.Pusat));
         alurPukul = StartCoroutine(AlurPukul(target));
     }

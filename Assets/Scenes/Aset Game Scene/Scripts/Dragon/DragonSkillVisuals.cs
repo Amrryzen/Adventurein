@@ -19,9 +19,11 @@ public class DragonSkillVisuals : MonoBehaviour
     [Header("Efek (opsional)")]
     [SerializeField] private ParticleSystem vfxPukul;
     [SerializeField] private GameObject auraSteel;
+    [SerializeField] private bool buatVfxRinganOtomatis = true;
 
     private readonly HashSet<int> paramAda = new();
     private int hashPush, hashSteel, hashPukul;
+    private ParticleSystem vfxPukulDefault;
 
     private void Awake()
     {
@@ -37,6 +39,9 @@ public class DragonSkillVisuals : MonoBehaviour
                 paramAda.Add(p.nameHash);
 
         if (auraSteel != null) auraSteel.SetActive(false);
+
+        if (vfxPukul == null && buatVfxRinganOtomatis)
+            vfxPukulDefault = BuatVfxPukulRingan();
     }
 
     private void OnEnable()
@@ -73,11 +78,49 @@ public class DragonSkillVisuals : MonoBehaviour
         if (animator != null && paramAda.Contains(hashPukul))
             animator.SetTrigger(hashPukul);
 
-        if (vfxPukul != null)
+        ParticleSystem vfx = vfxPukul != null ? vfxPukul : vfxPukulDefault;
+        if (vfx != null)
         {
-            vfxPukul.transform.position = titik;
-            vfxPukul.Play();
+            vfx.transform.position = titik;
+            vfx.Play();
         }
+    }
+
+    private ParticleSystem BuatVfxPukulRingan()
+    {
+        GameObject efek = new GameObject("VFX Pukul Ringan");
+        efek.transform.SetParent(transform);
+        efek.transform.localPosition = Vector3.zero;
+
+        ParticleSystem particle = efek.AddComponent<ParticleSystem>();
+        particle.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
+        ParticleSystem.MainModule utama = particle.main;
+        utama.duration = 0.25f;
+        utama.loop = false;
+        utama.startLifetime = 0.25f;
+        utama.startSpeed = 4f;
+        utama.startSize = 0.18f;
+        utama.startColor = new Color(1f, 0.45f, 0.08f, 1f);
+        utama.playOnAwake = false;
+
+        ParticleSystem.EmissionModule emission = particle.emission;
+        emission.enabled = true;
+        emission.rateOverTime = 0f;
+        emission.SetBursts(new[] { new ParticleSystem.Burst(0f, 12) });
+
+        ParticleSystem.ShapeModule bentuk = particle.shape;
+        bentuk.shapeType = ParticleSystemShapeType.Sphere;
+        bentuk.radius = 0.12f;
+
+        ParticleSystem.SizeOverLifetimeModule mengecil = particle.sizeOverLifetime;
+        mengecil.enabled = true;
+        mengecil.size = new ParticleSystem.MinMaxCurve(1f, AnimationCurve.Linear(0f, 1f, 1f, 0f));
+
+        ParticleSystemRenderer renderer = efek.GetComponent<ParticleSystemRenderer>();
+        renderer.renderMode = ParticleSystemRenderMode.Billboard;
+
+        return particle;
     }
 
     private void SetBool(int hash, bool nilai)

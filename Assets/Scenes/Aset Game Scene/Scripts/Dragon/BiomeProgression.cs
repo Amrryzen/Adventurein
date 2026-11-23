@@ -8,7 +8,7 @@ using UnityEngine;
 /// Letakkan satu di scene (GameObject kosong + PhotonView).
 /// </summary>
 [RequireComponent(typeof(PhotonView))]
-public class BiomeProgression : MonoBehaviourPun
+public class BiomeProgression : MonoBehaviourPunCallbacks
 {
     private const int LevelMaks = 3;
 
@@ -40,9 +40,10 @@ public class BiomeProgression : MonoBehaviourPun
     }
 
     [PunRPC]
-    private void RPC_MintaLevel(int level)
+    private void RPC_MintaLevel(int level, PhotonMessageInfo info)
     {
         if (!PhotonNetwork.IsMasterClient) return;
+        if (info.Sender == null) return;
         if (level < 1 || level > LevelMaks || level == LevelSaatIni) return;
 
         // Buffered: pemain yang masuk belakangan menerima level terakhir.
@@ -52,7 +53,14 @@ public class BiomeProgression : MonoBehaviourPun
     [PunRPC]
     private void RPC_SetLevel(int level)
     {
+        if (level < 1 || level > LevelMaks) return;
         LevelSaatIni = level;
         LevelBerubah?.Invoke(level);
+    }
+
+    public override void OnMasterClientSwitched(Photon.Realtime.Player pemainBaru)
+    {
+        if (!PhotonNetwork.IsMasterClient) return;
+        photonView.RPC(nameof(RPC_SetLevel), RpcTarget.AllBuffered, LevelSaatIni);
     }
 }

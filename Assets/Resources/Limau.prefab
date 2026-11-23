@@ -1,0 +1,538 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1059515834931937332
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8522520388830649620}
+  - component: {fileID: 44434105588148242}
+  m_Layer: 0
+  m_Name: LimauSilkLine
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8522520388830649620
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1059515834931937332}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2128389096765972118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!120 &44434105588148242
+LineRenderer:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1059515834931937332}
+  m_Enabled: 0
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 0
+  m_LightProbeUsage: 0
+  m_ReflectionProbeUsage: 0
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: c054692276e90f7439e9a16855c8425e, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_Positions:
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 1}
+  m_Parameters:
+    serializedVersion: 3
+    widthMultiplier: 1
+    widthCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0.05
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 0.05
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    colorGradient:
+      serializedVersion: 2
+      key0: {r: 1, g: 1, b: 1, a: 1}
+      key1: {r: 1, g: 1, b: 1, a: 1}
+      key2: {r: 0, g: 0, b: 0, a: 0}
+      key3: {r: 0, g: 0, b: 0, a: 0}
+      key4: {r: 0, g: 0, b: 0, a: 0}
+      key5: {r: 0, g: 0, b: 0, a: 0}
+      key6: {r: 0, g: 0, b: 0, a: 0}
+      key7: {r: 0, g: 0, b: 0, a: 0}
+      ctime0: 0
+      ctime1: 65535
+      ctime2: 0
+      ctime3: 0
+      ctime4: 0
+      ctime5: 0
+      ctime6: 0
+      ctime7: 0
+      atime0: 0
+      atime1: 65535
+      atime2: 0
+      atime3: 0
+      atime4: 0
+      atime5: 0
+      atime6: 0
+      atime7: 0
+      m_Mode: 0
+      m_ColorSpace: -1
+      m_NumColorKeys: 2
+      m_NumAlphaKeys: 2
+    numCornerVertices: 0
+    numCapVertices: 0
+    alignment: 0
+    textureMode: 0
+    textureScale: {x: 1, y: 1}
+    shadowBias: 0.5
+    generateLightingData: 0
+  m_UseWorldSpace: 1
+  m_Loop: 0
+  m_ApplyActiveColorSpace: 1
+--- !u!1 &2443115754914375424
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5963889037472768457}
+  - component: {fileID: 6490901788271792236}
+  m_Layer: 0
+  m_Name: LimauAuraLight
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5963889037472768457
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2443115754914375424}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2128389096765972118}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!108 &6490901788271792236
+Light:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2443115754914375424}
+  m_Enabled: 0
+  serializedVersion: 12
+  m_Type: 2
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Intensity: 0
+  m_Range: 6
+  m_SpotAngle: 30
+  m_InnerSpotAngle: 21.80208
+  m_CookieSize2D: {x: 0.5, y: 0.5}
+  m_Shadows:
+    m_Type: 0
+    m_Resolution: -1
+    m_CustomResolution: -1
+    m_Strength: 1
+    m_Bias: 0.05
+    m_NormalBias: 0.4
+    m_NearPlane: 0.2
+    m_CullingMatrixOverride:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: 1
+      e12: 0
+      e13: 0
+      e20: 0
+      e21: 0
+      e22: 1
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+    m_UseCullingMatrixOverride: 0
+  m_Cookie: {fileID: 0}
+  m_DrawHalo: 0
+  m_Flare: {fileID: 0}
+  m_RenderMode: 0
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RenderingLayerMask: 1
+  m_Lightmapping: 4
+  m_LightShadowCasterMode: 0
+  m_AreaSize: {x: 1, y: 1}
+  m_BounceIntensity: 1
+  m_ColorTemperature: 6570
+  m_UseColorTemperature: 0
+  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_UseBoundingSphereOverride: 0
+  m_UseViewFrustumForShadowCasterCull: 1
+  m_ForceVisible: 0
+  m_ShadowRadius: 0
+  m_ShadowAngle: 0
+  m_LightUnit: 1
+  m_LuxAtDistance: 1
+  m_EnableSpotReflector: 1
+--- !u!1001 &5269082247065076303
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 823744959563479625, guid: ac69b659d20e3e845baeea8511ebe3b2, type: 3}
+      propertyPath: m_Name
+      value: Limau
+      objectReference: {fileID: 0}
+    - target: {fileID: 1084431470256670741, guid: ac69b659d20e3e845baeea8511ebe3b2, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: c054692276e90f7439e9a16855c8425e, type: 2}
+    - target: {fileID: 1411304713740103781, guid: ac69b659d20e3e845baeea8511ebe3b2, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: c054692276e90f7439e9a16855c8425e, type: 2}
+    - target: {fileID: 4964763217807855360, guid: ac69b659d20e3e845baeea8511ebe3b2, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: c054692276e90f7439e9a16855c8425e, type: 2}
+    - target: {fileID: 6095064610303204569, guid: ac69b659d20e3e845baeea8511ebe3b2, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6095064610303204569, guid: ac69b659d20e3e845baeea8511ebe3b2, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -2.41
+      objectReference: {fileID: 0}
+    - target: {fileID: 6095064610303204569, guid: ac69b659d20e3e845baeea8511ebe3b2, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.291
+      objectReference: {fileID: 0}
+    - target: {fileID: 6095064610303204569, guid: ac69b659d20e3e845baeea8511ebe3b2, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6095064610303204569, guid: ac69b659d20e3e845baeea8511ebe3b2, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6095064610303204569, guid: ac69b659d20e3e845baeea8511ebe3b2, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6095064610303204569, guid: ac69b659d20e3e845baeea8511ebe3b2, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 6095064610303204569, guid: ac69b659d20e3e845baeea8511ebe3b2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8522520388830649620}
+    - targetCorrespondingSourceObject: {fileID: 6095064610303204569, guid: ac69b659d20e3e845baeea8511ebe3b2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5963889037472768457}
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 823744959563479625, guid: ac69b659d20e3e845baeea8511ebe3b2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7153375424340198363}
+    - targetCorrespondingSourceObject: {fileID: 823744959563479625, guid: ac69b659d20e3e845baeea8511ebe3b2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3379715567251408903}
+    - targetCorrespondingSourceObject: {fileID: 823744959563479625, guid: ac69b659d20e3e845baeea8511ebe3b2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3441098602569376394}
+    - targetCorrespondingSourceObject: {fileID: 823744959563479625, guid: ac69b659d20e3e845baeea8511ebe3b2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1442849058313164261}
+    - targetCorrespondingSourceObject: {fileID: 823744959563479625, guid: ac69b659d20e3e845baeea8511ebe3b2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6324111139827617811}
+    - targetCorrespondingSourceObject: {fileID: 823744959563479625, guid: ac69b659d20e3e845baeea8511ebe3b2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2133222050022369293}
+    - targetCorrespondingSourceObject: {fileID: 823744959563479625, guid: ac69b659d20e3e845baeea8511ebe3b2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4547404259305864044}
+    - targetCorrespondingSourceObject: {fileID: 823744959563479625, guid: ac69b659d20e3e845baeea8511ebe3b2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7964033201742511773}
+    - targetCorrespondingSourceObject: {fileID: 823744959563479625, guid: ac69b659d20e3e845baeea8511ebe3b2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1386664076732854257}
+    - targetCorrespondingSourceObject: {fileID: 823744959563479625, guid: ac69b659d20e3e845baeea8511ebe3b2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5026268497969797410}
+    - targetCorrespondingSourceObject: {fileID: 823744959563479625, guid: ac69b659d20e3e845baeea8511ebe3b2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8050967217553189222}
+  m_SourcePrefab: {fileID: 100100000, guid: ac69b659d20e3e845baeea8511ebe3b2, type: 3}
+--- !u!4 &2128389096765972118 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6095064610303204569, guid: ac69b659d20e3e845baeea8511ebe3b2, type: 3}
+  m_PrefabInstance: {fileID: 5269082247065076303}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &4787623057972606982 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 823744959563479625, guid: ac69b659d20e3e845baeea8511ebe3b2, type: 3}
+  m_PrefabInstance: {fileID: 5269082247065076303}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7153375424340198363
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4787623057972606982}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55ec066f311492c498faac5d83db6d22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LimauSkillInput
+  tombolSkill: 101
+  bidikDenganMouse: 1
+--- !u!114 &3379715567251408903
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4787623057972606982}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b45a417e239b4489ddfd3fd9fc3851, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LimauPhysicsHandler
+  model: {fileID: 5471485767937323780}
+  faktorMaks: 2
+  kecepatanMengembang: 3
+  ambangSiap: 0.9
+  lapisHalangan:
+    serializedVersion: 2
+    m_Bits: 4294967295
+--- !u!114 &3441098602569376394
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4787623057972606982}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a3caed7a735a4a428f329776c90f076, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LimauSilkHandler
+  tagTitikGantung: GrapplePoint
+  jangkauanMaks: 10
+  radiusBidik: 0.25
+  lapisBidik:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  offsetTangan: {x: 0, y: 0.5, z: 0}
+  spring: 6
+  damper: 7
+  massScale: 4.5
+  faktorPanjang: 0.85
+  jarakMinimum: 1.5
+  gayaAyun: 18
+  kecepatanGulung: 3
+--- !u!114 &1442849058313164261
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4787623057972606982}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0417cdd89e000e44a97fa647f15f78f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LimauSkillNetwork
+--- !u!114 &6324111139827617811
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4787623057972606982}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 597a9ab1e89773948b14ddae409c74c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LimauSkillController
+  levelAwal: 1
+  debugGantiLevel: 1
+--- !u!114 &2133222050022369293
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4787623057972606982}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71ea6d6afdf037040b6c74c4e89b57e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LimauInflateSkill
+  modeToggle: 1
+--- !u!114 &4547404259305864044
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4787623057972606982}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f268f3f6ea8d7ae49819fe87287dcbef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LimauBioluminesensiSkill
+--- !u!114 &7964033201742511773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4787623057972606982}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1cc98651801f6da4d9c35e1330c9ca77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LimauSilkSkill
+  cooldownTembak: 0.4
+  lepasDenganLompat: 1
+  jedaMomentum: 0.25
+  kecepatanTarik: 6
+  jarakSelesaiTarik: 1.5
+  waktuMaksTarik: 5
+--- !u!114 &1386664076732854257
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4787623057972606982}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2712d8abcddd2f43a6b139ba9a824d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LimauBantal
+  pantulanDasar: 11
+  pantulanLompat: 15
+  cooldown: 0.2
+--- !u!114 &5026268497969797410
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4787623057972606982}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90d5192e328ce934f8863e7d465bed0b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LimauAura
+  radius: 6
+--- !u!114 &8050967217553189222
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4787623057972606982}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f0e5ce3c42a28c43b4d7dc1f9bc8993, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LimauSkillVisuals
+  jaringan: {fileID: 1442849058313164261}
+  sutra: {fileID: 3441098602569376394}
+  aura: {fileID: 5026268497969797410}
+  garis: {fileID: 44434105588148242}
+  kecepatanTembak: 40
+  cahaya: {fileID: 6490901788271792236}
+  intensitasMaks: 3
+  kecepatanFade: 6
+  vfxAura: {fileID: 0}
+--- !u!4 &5471485767937323780 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 211973962411012427, guid: ac69b659d20e3e845baeea8511ebe3b2, type: 3}
+  m_PrefabInstance: {fileID: 5269082247065076303}
+  m_PrefabAsset: {fileID: 0}

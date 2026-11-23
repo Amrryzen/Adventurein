@@ -12,5 +12,8 @@ public class ZonaMati : MonoBehaviour
     {
         PlayerController p = other.GetComponentInParent<PlayerController>();
         if (p != null) p.Mati();
+
+        PushableObject pushable = other.GetComponentInParent<PushableObject>();
+        if (pushable != null) pushable.RespawnSetelahJatuh();
     }
 }

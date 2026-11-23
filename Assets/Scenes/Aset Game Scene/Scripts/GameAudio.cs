@@ -7,6 +7,21 @@ public class GameAudio : MonoBehaviour
 {
     public static GameAudio Instance { get; private set; }
 
+    public const string MusicVolumePref = "Audio_MusicVolume";
+    public const string SfxVolumePref = "Audio_SfxVolume";
+    public const string MusicMutedPref = "Audio_MusicMuted";
+    public const string SfxMutedPref = "Audio_SfxMuted";
+
+    private const float DefaultVolume = 0.15f;
+
+    [Header("Pengaturan Suara")]
+    [SerializeField] private Slider musicSlider;
+    [SerializeField] private Slider sfxSlider;
+    [SerializeField] private Button musicMuteButton;
+    [SerializeField] private Button sfxMuteButton;
+    [SerializeField] private Text musicButtonText;
+    [SerializeField] private Text sfxButtonText;
+
     [SerializeField] private AudioClip lobbyBgm;
     [SerializeField] private AudioClip gameBgm;
     [SerializeField] private AudioClip walk;
@@ -37,6 +52,8 @@ public class GameAudio : MonoBehaviour
         walkSource = CreateSource(false);
         walkSource.loop = true;
         walkSource.clip = walk;
+
+        ApplySavedVolumeSettings();
     }
 
     private void Start()
@@ -55,6 +72,38 @@ public class GameAudio : MonoBehaviour
                      FindObjectsInactive.Include,
                      FindObjectsSortMode.None))
             RegisterButton(button);
+
+        RefreshVolumeUI();
+    }
+
+    private void OnEnable()
+    {
+        if (musicSlider != null)
+            musicSlider.onValueChanged.AddListener(SetMusicVolume);
+
+        if (sfxSlider != null)
+            sfxSlider.onValueChanged.AddListener(SetSfxVolume);
+
+        if (musicMuteButton != null)
+            musicMuteButton.onClick.AddListener(ToggleMusicMute);
+
+        if (sfxMuteButton != null)
+            sfxMuteButton.onClick.AddListener(ToggleSfxMute);
+    }
+
+    private void OnDisable()
+    {
+        if (musicSlider != null)
+            musicSlider.onValueChanged.RemoveListener(SetMusicVolume);
+
+        if (sfxSlider != null)
+            sfxSlider.onValueChanged.RemoveListener(SetSfxVolume);
+
+        if (musicMuteButton != null)
+            musicMuteButton.onClick.RemoveListener(ToggleMusicMute);
+
+        if (sfxMuteButton != null)
+            sfxMuteButton.onClick.RemoveListener(ToggleSfxMute);
     }
 
     private void OnDestroy()
@@ -89,6 +138,73 @@ public class GameAudio : MonoBehaviour
         buttons.Add(button);
     }
 
+    public void SetMusicVolume(float volume)
+    {
+        volume = Mathf.Clamp01(volume);
+        PlayerPrefs.SetFloat(MusicVolumePref, volume);
+        ApplyMusicVolume();
+        PlayerPrefs.Save();
+        RefreshVolumeUI();
+    }
+
+    public void SetSfxVolume(float volume)
+    {
+        volume = Mathf.Clamp01(volume);
+        PlayerPrefs.SetFloat(SfxVolumePref, volume);
+        ApplySfxVolume();
+        PlayerPrefs.Save();
+        RefreshVolumeUI();
+    }
+
+    public void SetMusicMuted(bool muted)
+    {
+        PlayerPrefs.SetInt(MusicMutedPref, muted ? 1 : 0);
+        ApplyMusicVolume();
+        PlayerPrefs.Save();
+        RefreshVolumeUI();
+    }
+
+    public void SetSfxMuted(bool muted)
+    {
+        PlayerPrefs.SetInt(SfxMutedPref, muted ? 1 : 0);
+        ApplySfxVolume();
+        PlayerPrefs.Save();
+        RefreshVolumeUI();
+    }
+
+    public void ToggleMusicMute() =>
+        SetMusicMuted(!IsMusicMuted);
+
+    public void ToggleSfxMute() =>
+        SetSfxMuted(!IsSfxMuted);
+
+    private void RefreshVolumeUI()
+    {
+        if (musicSlider != null)
+            musicSlider.SetValueWithoutNotify(MusicVolume);
+
+        if (sfxSlider != null)
+            sfxSlider.SetValueWithoutNotify(SfxVolume);
+
+        if (musicButtonText != null)
+            musicButtonText.text = IsMusicMuted ? "BGM: OFF" : "BGM: ON";
+
+        if (sfxButtonText != null)
+            sfxButtonText.text = IsSfxMuted ? "SFX: OFF" : "SFX: ON";
+    }
+
+    public float MusicVolume =>
+        PlayerPrefs.GetFloat(MusicVolumePref, DefaultVolume);
+
+    public float SfxVolume =>
+        PlayerPrefs.GetFloat(SfxVolumePref, DefaultVolume);
+
+    public bool IsMusicMuted =>
+        PlayerPrefs.GetInt(MusicMutedPref, 0) == 1;
+
+    public bool IsSfxMuted =>
+        PlayerPrefs.GetInt(SfxMutedPref, 0) == 1;
+
     public void PlayJump() => PlayEffect(jump);
     public void PlayDeath() => PlayEffect(death);
     public void PlayKeyPickup() => PlayEffect(keyPickup);
@@ -111,5 +227,28 @@ public class GameAudio : MonoBehaviour
         source.loop = loop;
         source.spatialBlend = 0f;
         return source;
+    }
+
+    private void ApplySavedVolumeSettings()
+    {
+        ApplyMusicVolume();
+        ApplySfxVolume();
+    }
+
+    private void ApplyMusicVolume()
+    {
+        if (musicSource != null)
+            musicSource.volume = IsMusicMuted ? 0f : Mathf.Clamp01(MusicVolume);
+    }
+
+    private void ApplySfxVolume()
+    {
+        float volume = IsSfxMuted ? 0f : Mathf.Clamp01(SfxVolume);
+
+        if (effectsSource != null)
+            effectsSource.volume = volume;
+
+        if (walkSource != null)
+            walkSource.volume = volume;
     }
 }
