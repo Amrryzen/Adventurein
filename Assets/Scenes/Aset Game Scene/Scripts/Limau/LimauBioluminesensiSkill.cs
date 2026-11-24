@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// LEVEL 2 - BIOLUMINESENSI (toggle E).
+/// BIOLUMINESENSI (toggle Q).
 /// Hanya mengirim status ON/OFF. Cahaya diatur LimauSkillVisuals, sedangkan aura pengusir
 /// diatur LimauAura; keduanya berjalan di semua client dari event jaringan yang sama.
 /// </summary>
@@ -13,7 +13,7 @@ public class LimauBioluminesensiSkill : LimauSkillBase
 
     public override void OnUpdateSkill()
     {
-        if (Masukan.Ditekan) Atur(!Aktif);
+        if (Masukan.DitekanBioluminesensi) Atur(!Aktif);
     }
 
     public override void OnKeluar()

@@ -42,6 +42,7 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
 
     public bool TahanLompat => photonView.IsMine && Input.GetButton("Jump");
     public bool KontrolFisikaDilepas { get; set; }
+    public float DorongLuarX { get; set; }
 
     private void Awake()
     {
@@ -110,7 +111,7 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
         grounded = CekTanah();
 
         Vector3 v = rb.linearVelocity;
-        v.x = input * kecepatan;
+        v.x = Mathf.Abs(DorongLuarX) > 0.001f ? DorongLuarX : input * kecepatan;
 
         if (jumpDitekan && grounded && v.y <= 0.1f)
         {

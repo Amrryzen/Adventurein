@@ -17,12 +17,12 @@ public class LimauInflateSkill : LimauSkillBase
     {
         if (modeToggle)
         {
-            if (Masukan.Ditekan) Atur(!Aktif);
+            if (Masukan.DitekanInflate) Atur(!Aktif);
         }
         else
         {
-            if (Masukan.Ditekan) Atur(true);
-            else if (Masukan.Dilepas) Atur(false);
+            if (Masukan.DitekanInflate) Atur(true);
+            else if (Masukan.DilepasInflate) Atur(false);
         }
     }
 

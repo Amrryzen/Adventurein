@@ -366,8 +366,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55ec066f311492c498faac5d83db6d22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LimauSkillInput
-  tombolSkill: 101
+  tombolInflate: 101
+  tombolBioluminesensi: 113
+  tombolGrapplingSilk: 99
   bidikDenganMouse: 1
+  sensitivitasAimKeyboard: 1
+  tampilkanPanelAim: 1
 --- !u!114 &3379715567251408903
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -437,8 +441,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 597a9ab1e89773948b14ddae409c74c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LimauSkillController
-  levelAwal: 1
-  debugGantiLevel: 1
 --- !u!114 &2133222050022369293
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -527,6 +529,9 @@ MonoBehaviour:
   aura: {fileID: 5026268497969797410}
   garis: {fileID: 44434105588148242}
   kecepatanTembak: 40
+  vfxSilk: {fileID: 0}
+  warnaSilk: {r: 0.35, g: 0.9, b: 1, a: 1}
+  jumlahPartikelSilk: 18
   cahaya: {fileID: 6490901788271792236}
   intensitasMaks: 3
   kecepatanFade: 6

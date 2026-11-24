@@ -16,20 +16,39 @@ public class BreakableObject : MonoBehaviourPun
     [Tooltip("Dipanggil di semua client saat objek hancur (mis. buka jalan, mainkan suara).")]
     [SerializeField] private UnityEvent saatHancur;
 
+    [Tooltip("Batu keras: hanya pecah oleh Hantaman Penuh (tahan Q sampai penuh).")]
+    [SerializeField] private bool keras;
+
+    private const float TenagaMinimumKeras = 0.99f;
+
     private bool sudahHancur;
     private bool permintaanHancurTerkirim;
     private bool pengumumanHancurTerkirim;
 
     /// <summary>Dipanggil Dragon (owner). Mengirim permintaan hancur ke semua client.</summary>
-    public void RequestHancurkan()
+    public void RequestHancurkan(float tenaga = 0f)
     {
         if (sudahHancur || permintaanHancurTerkirim) return;
+        if (!BisaDihancurkan(tenaga)) return;
+
         permintaanHancurTerkirim = true;
-        photonView.RPC(nameof(RPC_MintaHancurkan), RpcTarget.MasterClient);
+        CancelInvoke(nameof(ResetPermintaan));
+        Invoke(nameof(ResetPermintaan), 1.5f); // jaga-jaga bila MasterClient menolak
+        photonView.RPC(nameof(RPC_MintaHancurkan), RpcTarget.MasterClient, tenaga);
+    }
+
+    public bool Keras => keras;
+
+    /// <summary>Batu biasa pecah oleh tenaga berapa pun; batu keras butuh isi penuh.</summary>
+    public bool BisaDihancurkan(float tenaga) => !keras || tenaga >= TenagaMinimumKeras;
+
+    private void ResetPermintaan()
+    {
+        if (!sudahHancur) permintaanHancurTerkirim = false;
     }
 
     [PunRPC]
-    private void RPC_MintaHancurkan(PhotonMessageInfo info)
+    private void RPC_MintaHancurkan(float tenaga, PhotonMessageInfo info)
     {
         if (!PhotonNetwork.IsMasterClient ||
             info.Sender == null ||
@@ -40,6 +59,9 @@ public class BreakableObject : MonoBehaviourPun
         }
 
         if (!PemainAdalahDragon(info.Sender))
+            return;
+
+        if (!BisaDihancurkan(tenaga))
             return;
 
         pengumumanHancurTerkirim = true;

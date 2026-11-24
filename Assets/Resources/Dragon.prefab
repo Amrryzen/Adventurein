@@ -539,6 +539,8 @@ GameObject:
   - component: {fileID: 302424495365238168}
   - component: {fileID: 4735202482117677811}
   - component: {fileID: 900200001}
+  - component: {fileID: 5964042313341031131}
+  - component: {fileID: 1851289438014150535}
   m_Layer: 6
   m_Name: Dragon
   m_TagString: Player
@@ -748,6 +750,8 @@ MonoBehaviour:
   tagBreakable: Breakable
   jangkauan: 1.6
   cooldown: 0.8
+  waktuIsi: 1.2
+  radiusHantamanPenuh: 3
   waktuTundaHit: 0.15
 --- !u!114 &4616716428163072852
 MonoBehaviour:
@@ -764,6 +768,10 @@ MonoBehaviour:
   modeToggle: 1
   bolehDiUdara: 0
   pengaliMassa: 50
+  staminaMaks: 100
+  biayaAktifPerDetik: 8
+  regenPerDetik: 12
+  jendelaParry: 0.25
 --- !u!114 &7166368628275232717
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -825,6 +833,47 @@ MonoBehaviour:
   jarakBerhenti: 1.2
   waktuMaks: 5
   offsetTujuan: {x: 0, y: 0.5, z: 0}
+--- !u!114 &5964042313341031131
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6941200740442599567}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b751b24174a005141b580e1ddc3e6731, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DragonJuice
+  model: {fileID: 0}
+  kekakuan: 240
+  redaman: 13
+  getarKamera: 1
+  hitStop: 1
+  jarakGetarMaks: 14
+  sfxDorong: {fileID: 0}
+  sfxMengisi: {fileID: 0}
+  sfxPukul: {fileID: 0}
+  sfxPukulPenuh: {fileID: 0}
+  sfxBajaAktif: {fileID: 0}
+  sfxBajaLepas: {fileID: 0}
+  sfxParry: {fileID: 0}
+--- !u!114 &1851289438014150535
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6941200740442599567}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3aa69e3285bd82343b7d8be7348ccc75, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DragonHud
+  tampil: 1
+  ukuran: 56
+  jarak: 10
+  margin: 24
 --- !u!1 &7817531247255216144
 GameObject:
   m_ObjectHideFlags: 0

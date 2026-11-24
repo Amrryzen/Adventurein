@@ -1,6 +1,5 @@
 /// <summary>
-/// Jenis skill Limau. Nilai angka = level yang membuka skill tersebut
-/// (level dibaca dari BiomeProgression, sama seperti Dragon).
+/// Jenis skill Limau. Nilai angka dipakai untuk indeks status skill jaringan.
 /// </summary>
 public enum LimauSkillType
 {
@@ -11,15 +10,14 @@ public enum LimauSkillType
 }
 
 /// <summary>
-/// Helper untuk LimauSkillType: pemetaan level -> skill (satu sumber kebenaran),
-/// level pembuka, dan nama tampil untuk UI/log.
+/// Helper untuk LimauSkillType dan nama tampil untuk UI/log.
 /// </summary>
 public static class LimauSkillTypeExtensions
 {
     public const int LevelMin = 1;
     public const int LevelMaks = 3;
 
-    /// <summary>Level 1/2/3 -> skill. Di luar rentang -> None.</summary>
+    /// <summary>Konversi nomor skill lama ke tipe skill. Di luar rentang -> None.</summary>
     public static LimauSkillType DariLevel(int level)
     {
         return level switch
@@ -31,7 +29,7 @@ public static class LimauSkillTypeExtensions
         };
     }
 
-    /// <summary>Level yang membuka skill ini (0 untuk None).</summary>
+    /// <summary>Nilai indeks skill ini (0 untuk None).</summary>
     public static int LevelPembuka(this LimauSkillType tipe) => (int)tipe;
 
     /// <summary>Nama untuk UI/log.</summary>

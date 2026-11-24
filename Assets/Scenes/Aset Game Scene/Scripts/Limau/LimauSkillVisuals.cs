@@ -15,6 +15,9 @@ public class LimauSkillVisuals : MonoBehaviour
     [SerializeField] private LineRenderer garis;
     [Tooltip("Kecepatan benang 'meluncur' keluar (unit/detik).")]
     [SerializeField] private float kecepatanTembak = 40f;
+    [SerializeField] private ParticleSystem vfxSilk;
+    [SerializeField] private Color warnaSilk = new Color(0.35f, 0.9f, 1f, 1f);
+    [SerializeField, Min(0f)] private float jumlahPartikelSilk = 18f;
 
     [Header("Bioluminesensi")]
     [SerializeField] private Light cahaya;
@@ -46,6 +49,15 @@ public class LimauSkillVisuals : MonoBehaviour
                 Shader shader = Shader.Find("Sprites/Default");
                 if (shader != null) garis.material = new Material(shader);
             }
+        }
+
+        if (vfxSilk == null)
+            vfxSilk = BuatVfxSilk();
+
+        if (vfxSilk != null)
+        {
+            vfxSilk.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            vfxSilk.transform.position = transform.position;
         }
 
         if (cahaya != null)
@@ -93,6 +105,7 @@ public class LimauSkillVisuals : MonoBehaviour
         panjangTampil = 0f; // mulai animasi meluncur
 
         if (garis != null) garis.enabled = true;
+        AturPartikelSilk(true);
     }
 
     private void SaatSutraLepas()
@@ -101,6 +114,7 @@ public class LimauSkillVisuals : MonoBehaviour
         targetIkut = null;
 
         if (garis != null) garis.enabled = false;
+        AturPartikelSilk(false);
     }
 
     private void Update()
@@ -127,5 +141,58 @@ public class LimauSkillVisuals : MonoBehaviour
 
         garis.SetPosition(0, asal);
         garis.SetPosition(1, ujung);
+
+        if (vfxSilk != null)
+            vfxSilk.transform.position = ujung;
+    }
+
+    private void AturPartikelSilk(bool aktif)
+    {
+        if (vfxSilk == null) return;
+
+        if (aktif)
+        {
+            vfxSilk.Play();
+            var emission = vfxSilk.emission;
+            emission.enabled = true;
+        }
+        else
+        {
+            var emission = vfxSilk.emission;
+            emission.enabled = false;
+            vfxSilk.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        }
+    }
+
+    private ParticleSystem BuatVfxSilk()
+    {
+        GameObject objek = new GameObject("SilkParticles");
+        objek.transform.SetParent(transform, true);
+
+        ParticleSystem partikel = objek.AddComponent<ParticleSystem>();
+        ParticleSystem.MainModule main = partikel.main;
+        main.loop = true;
+        main.playOnAwake = false;
+        main.simulationSpace = ParticleSystemSimulationSpace.World;
+        main.startLifetime = 0.35f;
+        main.startSpeed = 0.35f;
+        main.startSize = 0.08f;
+        main.startColor = warnaSilk;
+        main.maxParticles = 64;
+
+        ParticleSystem.EmissionModule emission = partikel.emission;
+        emission.enabled = false;
+        emission.rateOverTime = jumlahPartikelSilk;
+
+        ParticleSystem.ShapeModule shape = partikel.shape;
+        shape.shapeType = ParticleSystemShapeType.Sphere;
+        shape.radius = 0.08f;
+
+        ParticleSystemRenderer renderer = partikel.GetComponent<ParticleSystemRenderer>();
+        Shader shader = Shader.Find("Particles/Standard Unlit");
+        if (shader == null) shader = Shader.Find("Sprites/Default");
+        if (shader != null) renderer.material = new Material(shader);
+
+        return partikel;
     }
 }

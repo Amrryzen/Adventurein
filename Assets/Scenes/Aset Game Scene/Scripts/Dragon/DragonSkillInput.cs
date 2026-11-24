@@ -15,7 +15,11 @@ public class DragonSkillInput : MonoBehaviour
     public bool Ditahan { get; private set; }   // selama tombol ditahan
     public bool Dilepas { get; private set; }   // frame saat tombol dilepas (atau input terkunci)
     public bool DitekanSmash { get; private set; }
+    public bool DitahanSmash { get; private set; }   // selama Q ditahan (charge Hantaman)
+    public bool DilepasSmash { get; private set; }   // frame saat Q dilepas
     public bool DitekanSteelSkin { get; private set; }
+    public bool DitahanSteelSkin { get; private set; }
+    public bool DilepasSteelSkin { get; private set; }
     public float Horizontal { get; private set; } // -1, 0, atau 1
 
     public void Sampel()
@@ -27,8 +31,14 @@ public class DragonSkillInput : MonoBehaviour
         Ditahan = boleh && Input.GetKey(tombolSkill);
         Ditekan = boleh && Input.GetKeyDown(tombolSkill);
         Dilepas = sebelumnya && !Ditahan;
+        bool smashSebelumnya = DitahanSmash;
+        DitahanSmash = boleh && Input.GetKey(tombolSmash);
         DitekanSmash = boleh && Input.GetKeyDown(tombolSmash);
+        DilepasSmash = smashSebelumnya && !DitahanSmash;
+        bool bajaSebelumnya = DitahanSteelSkin;
+        DitahanSteelSkin = boleh && Input.GetKey(tombolSteelSkin);
         DitekanSteelSkin = boleh && Input.GetKeyDown(tombolSteelSkin);
+        DilepasSteelSkin = bajaSebelumnya && !DitahanSteelSkin;
 
         float raw = boleh ? Input.GetAxisRaw("Horizontal") : 0f;
         Horizontal = Mathf.Abs(raw) > 0.3f ? Mathf.Sign(raw) : 0f;

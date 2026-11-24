@@ -19,6 +19,12 @@ public class DragonSkillNetwork : MonoBehaviourPunCallbacks
     /// <summary>Titik dunia tempat pukulan mengenai target - dipicu di owner DAN remote.</summary>
     public event Action<Vector3> PukulanDipicu;
 
+    /// <summary>Pukulan + tenaga isi (0..1; 1 = Hantaman Penuh) - dipicu di owner DAN remote.</summary>
+    public event Action<Vector3, float> PukulanBerkekuatan;
+
+    /// <summary>Steel Skin berhasil mem-parry serangan di titik ini - dipicu di owner DAN remote.</summary>
+    public event Action<Vector3> ParryDipicu;
+
     private readonly bool[] statusAktif = new bool[4];
 
     public bool IsAktif(DragonSkillType tipe)
@@ -37,12 +43,23 @@ public class DragonSkillNetwork : MonoBehaviourPunCallbacks
         photonView.RPC(nameof(RPC_SkillAktif), RpcTarget.Others, (int)tipe, aktif);
     }
 
-    public void KirimPukulan(Vector3 titik)
+    public void KirimPukulan(Vector3 titik) => KirimPukulan(titik, 0f);
+
+    public void KirimPukulan(Vector3 titik, float tenaga)
     {
         if (!photonView.IsMine) return;
 
         PukulanDipicu?.Invoke(titik);
-        photonView.RPC(nameof(RPC_Pukulan), RpcTarget.Others, titik);
+        PukulanBerkekuatan?.Invoke(titik, tenaga);
+        photonView.RPC(nameof(RPC_Pukulan), RpcTarget.Others, titik, tenaga);
+    }
+
+    public void KirimParry(Vector3 titik)
+    {
+        if (!photonView.IsMine) return;
+
+        ParryDipicu?.Invoke(titik);
+        photonView.RPC(nameof(RPC_Parry), RpcTarget.Others, titik);
     }
 
     // ---------------- Penerima RPC ----------------
@@ -55,10 +72,18 @@ public class DragonSkillNetwork : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    private void RPC_Pukulan(Vector3 titik, PhotonMessageInfo info)
+    private void RPC_Pukulan(Vector3 titik, float tenaga, PhotonMessageInfo info)
     {
         if (!PengirimAdalahOwner(info)) return;
         PukulanDipicu?.Invoke(titik);
+        PukulanBerkekuatan?.Invoke(titik, tenaga);
+    }
+
+    [PunRPC]
+    private void RPC_Parry(Vector3 titik, PhotonMessageInfo info)
+    {
+        if (!PengirimAdalahOwner(info)) return;
+        ParryDipicu?.Invoke(titik);
     }
 
     // ---------------- Internal ----------------

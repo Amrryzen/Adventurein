@@ -13,6 +13,7 @@ public class LimauSilkHandler : MonoBehaviour
     {
         public Vector3 titik;       // titik tambat di dunia
         public TargetSutra teman;   // null = titik gantung statis, non-null = teman yang ditarik
+        public TargetSutra jangkar; // non-null = teman Steel Skin yang dipakai sebagai titik ayun
     }
 
     [Header("Bidik")]
@@ -89,8 +90,19 @@ public class LimauSilkHandler : MonoBehaviour
         TargetSutra teman = kena.GetComponentInParent<TargetSutra>();
         if (teman != null)
         {
-            hasil.teman = teman;
             hasil.titik = teman.TitikTambat.position;
+
+            if (teman.SedangKokoh)
+            {
+                // Teman sedang Steel Skin (tak bisa ditarik) -> jadikan jangkar untuk berayun.
+                hasil.jangkar = teman;
+                hasil.titik.z = transform.position.z;
+            }
+            else
+            {
+                hasil.teman = teman;
+            }
+
             return true;
         }
 

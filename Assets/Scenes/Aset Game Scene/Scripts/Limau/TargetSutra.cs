@@ -29,6 +29,9 @@ public class TargetSutra : MonoBehaviourPun
 
     public Transform TitikTambat => titikTambat != null ? titikTambat : transform;
 
+    /// <summary>true saat Dragon sedang Steel Skin: kokoh, jadi jangkar ayunan Limau (bukan ditarik).</summary>
+    public bool SedangKokoh => dragon != null && dragon.IsAktif(DragonSkillType.SteelSkin);
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();

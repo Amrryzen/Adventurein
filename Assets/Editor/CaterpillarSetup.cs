@@ -24,6 +24,23 @@ public static class CaterpillarSetup
     {
         EditorApplication.delayCall += BersihkanTesDanBangunStageSekali;
         EditorApplication.delayCall += PasangSkillPrefabSekali;
+        EditorApplication.delayCall += PasangGameplayBaruSekali;
+    }
+
+    private static void PasangGameplayBaruSekali()
+    {
+        const string kunciSelesai = "Caterpillar.GameplayBaru.v1";
+        if (EditorPrefs.GetBool(kunciSelesai, false))
+            return;
+        if (EditorApplication.isPlayingOrWillChangePlaymode)
+            return;
+
+        SetupKarakter();
+        PasangGameplayDiSceneAktif();
+        EditorPrefs.SetBool(kunciSelesai, true);
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+        Debug.Log("Gameplay baru dipasang: Juice/HUD Dragon dan hazard di scene aktif.");
     }
 
     private static void PasangSkillPrefabSekali()
@@ -214,6 +231,9 @@ public static class CaterpillarSetup
 
         BuatKotakDorongDi(new Vector3(-2f, 2.8f, 0f));
         BuatBatuDi(new Vector3(2f, 4.8f, 0f));
+        BuatAnginBerkalaDi(new Vector3(0f, 3f, 0f));
+        BuatKumbangDi(new Vector3(-3f, 2.8f, 0f));
+        BuatBurungPelatukDi(new Vector3(0f, 7f, 0f));
         BuatObjektifKey();
         BuatGerbangLevel(new Vector3(0f, 6.8f, 0f), "");
 
@@ -327,6 +347,41 @@ public static class CaterpillarSetup
         BuatSceneTes();
         BuatStageTes();
         PasangDebugFeedback();
+    }
+
+    public static void ImplementasiGameplayBaruBatch()
+    {
+        SetupKarakter();
+        BuatStageTes();
+        PasangGameplayDiSceneAktif();
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+    }
+
+    private static void PasangGameplayDiSceneAktif()
+    {
+        Scene scene = EditorSceneManager.GetActiveScene();
+        if (!scene.IsValid())
+            return;
+
+        if (Object.FindObjectOfType<AnginBerkala>() == null)
+        {
+            BuatAnginBerkalaDi(new Vector3(0f, 3f, 0f));
+        }
+
+        if (Object.FindObjectOfType<KumbangContoh>() == null)
+        {
+            BuatKumbangDi(new Vector3(-3f, 2.8f, 0f));
+        }
+
+        if (Object.FindObjectOfType<BurungPelatuk>() == null)
+        {
+            BuatBurungPelatukDi(new Vector3(0f, 7f, 0f));
+        }
+
+        TetapkanPhotonViewSceneId();
+        EditorSceneManager.MarkSceneDirty(scene);
+        EditorSceneManager.SaveScene(scene);
     }
 
     public static void PasangDebugFeedback()
@@ -536,6 +591,55 @@ public static class CaterpillarSetup
     {
         GameObject batu = BuatKubus("Batu", posisi, Vector3.one);
         SiapkanBatu(batu, 2);
+    }
+
+    private static void BuatAnginBerkalaDi(Vector3 posisi)
+    {
+        GameObject zona = BuatKubus(
+            "Angin Berkala",
+            posisi,
+            new Vector3(8f, 3f, 3f));
+        zona.GetComponent<MeshRenderer>().enabled = false;
+        zona.GetComponent<BoxCollider>().isTrigger = true;
+        zona.AddComponent<AnginBerkala>();
+    }
+
+    private static void BuatKumbangDi(Vector3 posisi)
+    {
+        GameObject kumbang = BuatKubus(
+            "Kumbang Contoh",
+            posisi,
+            new Vector3(0.8f, 0.8f, 0.8f));
+        Rigidbody badan = kumbang.AddComponent<Rigidbody>();
+        badan.useGravity = false;
+        badan.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotation;
+        BoxCollider collider = kumbang.GetComponent<BoxCollider>();
+        collider.isTrigger = true;
+        kumbang.AddComponent<PhotonView>();
+        KumbangContoh komponen = kumbang.AddComponent<KumbangContoh>();
+        SerializedObject properti = new SerializedObject(komponen);
+        properti.FindProperty("jangkauanPatroli").floatValue = 3f;
+        properti.FindProperty("kecepatan").floatValue = 1.5f;
+        properti.FindProperty("kecepatanKabur").floatValue = 3.5f;
+        properti.ApplyModifiedPropertiesWithoutUndo();
+    }
+
+    private static void BuatBurungPelatukDi(Vector3 posisi)
+    {
+        GameObject burung = new GameObject("Burung Pelatuk");
+        burung.transform.position = posisi;
+        SphereCollider collider = burung.AddComponent<SphereCollider>();
+        collider.radius = 0.25f;
+        collider.isTrigger = true;
+        burung.AddComponent<PhotonView>();
+        BurungPelatuk komponen = burung.AddComponent<BurungPelatuk>();
+
+        SerializedObject properti = new SerializedObject(komponen);
+        properti.FindProperty("lebarJalur").floatValue = 20f;
+        properti.FindProperty("radiusSerang").floatValue = 0.45f;
+        properti.FindProperty("waktuPeringatan").floatValue = 1.6f;
+        properti.FindProperty("waktuDash").floatValue = 0.45f;
+        properti.ApplyModifiedPropertiesWithoutUndo();
     }
 
     private static void SiapkanBatu(GameObject batu, int level)
@@ -756,6 +860,8 @@ public static class CaterpillarSetup
         PastikanKomponen<DragonDestroySkill>(objek, ringkasan);
         PastikanKomponen<DragonSteelSkinSkill>(objek, ringkasan);
         PastikanKomponen<DragonSkillVisuals>(objek, ringkasan);
+        PastikanKomponen<DragonJuice>(objek, ringkasan);
+        PastikanKomponen<DragonHud>(objek, ringkasan);
         PastikanKomponen<TargetSutra>(objek, ringkasan);
     }
 

@@ -3,7 +3,7 @@ using UnityEngine;
 
 /// <summary>
 /// LEVEL 3 - GRAPPLING SILK.
-/// Tekan E untuk menembak sutra ke arah bidik (mouse / tombol arah).
+/// Tekan C untuk menembak sutra ke arah bidik. Tahan klik kanan untuk membidik dengan mouse.
 ///  - Mengenai objek bertag "GrapplePoint": Limau BERAYUN (SpringJoint lokal di client Limau).
 ///  - Mengenai teman (komponen TargetSutra): teman DITARIK ke Limau (fisikanya dijalankan
 ///    di client teman, dipicu lewat RPC).
@@ -28,6 +28,8 @@ public class LimauSilkSkill : LimauSkillBase
     private bool terpasang;
     private bool menarikTeman;
     private Transform temanTransform;
+    private TargetSutra jangkar;
+    private bool adaJangkar;
     private float waktuPasang;
     private float cooldownSelesai;
     private Coroutine alurMomentum;
@@ -36,7 +38,12 @@ public class LimauSilkSkill : LimauSkillBase
     {
         if (terpasang)
         {
-            bool lepas = Masukan.Ditekan || (lepasDenganLompat && Masukan.LompatDitekan);
+            bool lepas = Masukan.DitekanGrapplingSilk ||
+                         (lepasDenganLompat && Masukan.LompatDitekan);
+
+            // Jangkar (Dragon Steel Skin) melepas kekokohannya / hilang -> Limau ikut lepas.
+            if (adaJangkar && (jangkar == null || !jangkar.SedangKokoh))
+                lepas = true;
 
             // Tarikan selesai: teman sudah dekat / hilang / kelamaan.
             if (menarikTeman &&
@@ -49,7 +56,7 @@ public class LimauSilkSkill : LimauSkillBase
             return;
         }
 
-        if (!Masukan.Ditekan || Time.time < cooldownSelesai) return;
+        if (!Masukan.DitekanGrapplingSilk || Time.time < cooldownSelesai) return;
 
         Vector2 arah = Masukan.HitungArahBidik(Sutra.AsalSutra);
         if (!Sutra.TryBidik(arah, out LimauSilkHandler.HasilBidik hasil))
@@ -84,6 +91,8 @@ public class LimauSilkSkill : LimauSkillBase
         waktuPasang = Time.time;
         menarikTeman = hasil.teman != null;
         temanTransform = menarikTeman ? hasil.teman.TitikTambat : null;
+        jangkar = hasil.jangkar;
+        adaJangkar = jangkar != null;
 
         if (alurMomentum != null)
         {
@@ -107,6 +116,8 @@ public class LimauSilkSkill : LimauSkillBase
         terpasang = false;
         menarikTeman = false;
         temanTransform = null;
+        jangkar = null;
+        adaJangkar = false;
         cooldownSelesai = Time.time + cooldownTembak;
 
         Sutra.LepasAyunan();

@@ -63,6 +63,10 @@ MonoBehaviour:
   - RPC_SutraLepas
   - RPC_SutraTerpasang
   - RPC_TampilkanPushable
+  - RPC_Distun
+  - RPC_Parry
+  - RPC_Pingsan
+  - RPC_Serang
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

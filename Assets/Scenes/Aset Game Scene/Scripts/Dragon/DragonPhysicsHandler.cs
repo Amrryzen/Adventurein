@@ -69,6 +69,13 @@ public class DragonPhysicsHandler : MonoBehaviour
         return hasil != null;
     }
 
+    /// <summary>Semua collider (non-trigger) dalam radius dari pusat Dragon. Dipakai Hantaman Penuh.</summary>
+    public int CariDalamRadius(float radius, Collider[] hasil)
+    {
+        return Physics.OverlapSphereNonAlloc(
+            kapsul.bounds.center, radius, hasil, lapisDeteksi, QueryTriggerInteraction.Ignore);
+    }
+
     private static bool PunyaTag(Collider c, string tag)
     {
         if (c.CompareTag(tag)) return true;
