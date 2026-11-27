@@ -14,9 +14,15 @@ public class LimauSkillVisuals : MonoBehaviour
     [SerializeField] private string paramPulling = "IsPulling";     // bool (sutra menarik teman)
     [SerializeField] private string triggerSilkShoot = "SilkShoot"; // trigger
     [SerializeField] private string paramAimY = "AimY";             // float -1 (bawah) .. 1 (atas)
+    [SerializeField] private string triggerInflateIn = "InflateIn";
+    [SerializeField] private string triggerInflateOut = "InflateOut";
+    [SerializeField] private string triggerGlowOn = "GlowOn";
+    [SerializeField] private string triggerGlowOff = "GlowOff";
+    [SerializeField] private string triggerInflateBounce = "InflateBounce";
 
     private readonly HashSet<int> paramAda = new();
     private int hInflated, hGlowing, hSwinging, hPulling, hShoot, hAimY;
+    private int hInflateIn, hInflateOut, hGlowOn, hGlowOff, hInflateBounce;
 
     [Header("Sutra (LineRenderer)")]
     [SerializeField] private LineRenderer garis;
@@ -51,6 +57,11 @@ public class LimauSkillVisuals : MonoBehaviour
         hPulling = Animator.StringToHash(paramPulling);
         hShoot = Animator.StringToHash(triggerSilkShoot);
         hAimY = Animator.StringToHash(paramAimY);
+        hInflateIn = Animator.StringToHash(triggerInflateIn);
+        hInflateOut = Animator.StringToHash(triggerInflateOut);
+        hGlowOn = Animator.StringToHash(triggerGlowOn);
+        hGlowOff = Animator.StringToHash(triggerGlowOff);
+        hInflateBounce = Animator.StringToHash(triggerInflateBounce);
 
         // Cache parameter yang benar-benar ada agar tidak spam warning.
         if (animator != null)
@@ -106,8 +117,16 @@ public class LimauSkillVisuals : MonoBehaviour
 
     private void SaatSkillAktif(LimauSkillType tipe, bool aktif)
     {
-        if (tipe == LimauSkillType.Inflate) SetBool(hInflated, aktif);
-        if (tipe == LimauSkillType.Bioluminesensi) SetBool(hGlowing, aktif);
+        if (tipe == LimauSkillType.Inflate)
+        {
+            SetBool(hInflated, aktif);
+            SetTrigger(aktif ? hInflateIn : hInflateOut);
+        }
+        if (tipe == LimauSkillType.Bioluminesensi)
+        {
+            SetBool(hGlowing, aktif);
+            SetTrigger(aktif ? hGlowOn : hGlowOff);
+        }
 
         if (tipe != LimauSkillType.Bioluminesensi) return;
 
@@ -235,5 +254,13 @@ public class LimauSkillVisuals : MonoBehaviour
     {
         if (animator != null && paramAda.Contains(hash))
             animator.SetBool(hash, nilai);
+    }
+
+    public void MainkanInflateBounce() => SetTrigger(hInflateBounce);
+
+    private void SetTrigger(int hash)
+    {
+        if (animator != null && paramAda.Contains(hash))
+            animator.SetTrigger(hash);
     }
 }

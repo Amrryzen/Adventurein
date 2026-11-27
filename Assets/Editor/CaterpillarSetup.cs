@@ -804,7 +804,8 @@ public static class CaterpillarSetup
                 ringkasan.Add($"Varian dibuat: {jalur}");
             }
 
-            TerapkanMaterial(objek, material);
+            if (jalur != JalurLimau)
+                TerapkanMaterial(objek, material);
             if (tambahSkill)
             {
                 if (jalur == JalurDragon)

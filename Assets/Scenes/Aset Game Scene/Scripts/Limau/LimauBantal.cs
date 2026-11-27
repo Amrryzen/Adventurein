@@ -16,12 +16,14 @@ public class LimauBantal : MonoBehaviour
     [SerializeField] private float cooldown = 0.2f;
 
     private LimauPhysicsHandler fisik;
+    private LimauSkillVisuals visuals;
     private CapsuleCollider kol;
     private float cooldownSelesai;
 
     private void Awake()
     {
         fisik = GetComponent<LimauPhysicsHandler>();
+        visuals = GetComponent<LimauSkillVisuals>();
         kol = GetComponent<CapsuleCollider>();
     }
 
@@ -36,6 +38,7 @@ public class LimauBantal : MonoBehaviour
         if (c.collider.bounds.min.y < kol.bounds.max.y - 0.2f) return;
 
         cooldownSelesai = Time.time + cooldown;
+        if (visuals != null) visuals.MainkanInflateBounce();
 
         if (GameAudio.Instance != null)
             GameAudio.Instance.PlayBouncer();

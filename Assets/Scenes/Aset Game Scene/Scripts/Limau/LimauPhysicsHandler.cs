@@ -6,7 +6,7 @@ using UnityEngine;
 /// Berjalan di SEMUA client (event-driven dari LimauSkillNetwork) karena collider
 /// Limau di client Dragon harus ikut membesar agar Dragon bisa memantul di atasnya.
 /// Sengaja TIDAK menskalakan root agar tidak bentrok dengan sinkronisasi transform & fisika.
-/// Asumsi: CapsuleCollider.direction = Y dan skala root = 1.
+/// Mendukung kapsul vertikal maupun horizontal; skala root tetap diasumsikan 1.
 /// </summary>
 [RequireComponent(typeof(CapsuleCollider))]
 public class LimauPhysicsHandler : MonoBehaviour
@@ -30,6 +30,7 @@ public class LimauPhysicsHandler : MonoBehaviour
     private float tinggiAsal;
     private Vector3 centerAsal;
     private Vector3 skalaModelAsal = Vector3.one;
+    private Vector3 posisiModelAsal;
 
     private float faktor = 1f;
     private float faktorTarget = 1f;
@@ -49,7 +50,11 @@ public class LimauPhysicsHandler : MonoBehaviour
         tinggiAsal = kapsul.height;
         centerAsal = kapsul.center;
 
-        if (model != null) skalaModelAsal = model.localScale;
+        if (model != null)
+        {
+            skalaModelAsal = model.localScale;
+            posisiModelAsal = model.localPosition;
+        }
         else Debug.LogWarning("LimauPhysicsHandler: 'model' belum diisi, hanya collider yang membesar.", this);
     }
 
@@ -79,11 +84,19 @@ public class LimauPhysicsHandler : MonoBehaviour
 
     private void TerapkanBentuk()
     {
-        if (model != null) model.localScale = skalaModelAsal * faktor;
+        if (model != null)
+        {
+            model.localScale = skalaModelAsal * faktor;
+            model.localPosition = posisiModelAsal;
+            if (kapsul.direction != 1)
+                model.localPosition += Vector3.up * radiusAsal * (faktor - 1f);
+        }
 
         float tinggiBaru = tinggiAsal * faktor;
         Vector3 center = centerAsal;
-        center.y += (tinggiBaru - tinggiAsal) * 0.5f; // jaga posisi kaki tetap di tempat
+        center.y += kapsul.direction == 1
+            ? (tinggiBaru - tinggiAsal) * 0.5f
+            : radiusAsal * (faktor - 1f);
 
         kapsul.radius = radiusAsal * faktor;
         kapsul.height = tinggiBaru;
@@ -100,12 +113,22 @@ public class LimauPhysicsHandler : MonoBehaviour
         float tinggi = tinggiAsal * faktorMaks;
 
         Vector3 center = centerAsal;
-        center.y += (tinggi - tinggiAsal) * 0.5f;
+        center.y += kapsul.direction == 1
+            ? (tinggi - tinggiAsal) * 0.5f
+            : radiusAsal * (faktorMaks - 1f);
 
         float setengah = Mathf.Max(0f, tinggi * 0.5f - r);
-        Vector3 p1 = transform.TransformPoint(center + Vector3.up * setengah);
-        Vector3 p2 = transform.TransformPoint(center - Vector3.up * setengah);
-        float skala = Mathf.Max(transform.lossyScale.x, transform.lossyScale.z);
+        Vector3 sumbu = kapsul.direction == 0
+            ? Vector3.right
+            : kapsul.direction == 1 ? Vector3.up : Vector3.forward;
+        Vector3 p1 = transform.TransformPoint(center + sumbu * setengah);
+        Vector3 p2 = transform.TransformPoint(center - sumbu * setengah);
+        Vector3 skalaAkar = transform.lossyScale;
+        float skala = kapsul.direction == 0
+            ? Mathf.Max(skalaAkar.y, skalaAkar.z)
+            : kapsul.direction == 1
+                ? Mathf.Max(skalaAkar.x, skalaAkar.z)
+                : Mathf.Max(skalaAkar.x, skalaAkar.y);
 
         int jumlah = Physics.OverlapCapsuleNonAlloc(
             p1, p2, r * skala * 0.95f, buffer, lapisHalangan, QueryTriggerInteraction.Ignore);
