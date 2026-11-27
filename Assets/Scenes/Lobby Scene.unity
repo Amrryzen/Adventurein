@@ -286,7 +286,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.067, y: 0.08440512}
   m_AnchorMax: {x: 0.37300003, y: 0.21351278}
-  m_AnchoredPosition: {x: 5.0058594, y: -9.747559}
+  m_AnchoredPosition: {x: 5.0059814, y: -9.747559}
   m_SizeDelta: {x: 1.8532104, y: 2.3478699}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &91055931
@@ -5762,7 +5762,7 @@ MonoBehaviour:
   containerSlot: {fileID: 1343923140}
   prefabSlot: {fileID: 8396365094431756813, guid: 1f5cbc49dca1a314abd745dad976e010, type: 3}
   tombolStart: {fileID: 75529640}
-  namaSceneGame: Game Scene
+  namaSceneGame: Stage1
   minimalPemain: 2
 --- !u!114 &1703833999
 MonoBehaviour:

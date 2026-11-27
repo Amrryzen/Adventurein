@@ -18,7 +18,7 @@ public class LimauSilkHandler : MonoBehaviour
 
     [Header("Bidik")]
     [SerializeField] private string tagTitikGantung = "GrapplePoint";
-    [SerializeField] private float jangkauanMaks = 10f;
+    [SerializeField] private float jangkauanMaks = 5.5f;
     [SerializeField] private float radiusBidik = 0.25f;
     [SerializeField] private LayerMask lapisBidik = ~0;
     [Tooltip("Posisi lokal asal sutra (kira-kira tangan/dada).")]

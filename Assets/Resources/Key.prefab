@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 7050828669177077110}
   - component: {fileID: 5994625280214725013}
   - component: {fileID: 6460456853705955881}
-  - component: {fileID: 5869767993767494534}
   - component: {fileID: 1077077267840331572}
   - component: {fileID: 8366111694176927604}
   - component: {fileID: 5407366367302536899}
@@ -108,19 +107,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f19f361aebbf02948982046621469d65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KeyPickup
---- !u!114 &5869767993767494534
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 305126263230467088}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5de86a7ab1d6251449c73b8fd8f912f1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerKeyPickup
-  keyAnchor: {fileID: 0}
 --- !u!65 &1077077267840331572
 BoxCollider:
   m_ObjectHideFlags: 0

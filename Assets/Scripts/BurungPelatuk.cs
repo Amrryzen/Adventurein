@@ -18,15 +18,17 @@ using UnityEngine;
 public class BurungPelatuk : MonoBehaviourPunCallbacks, IBisaDistun
 {
     [Header("Jadwal (MasterClient yang memutuskan)")]
-    [SerializeField] private float jedaMin = 4f;
-    [SerializeField] private float jedaMaks = 7f;
+    [SerializeField] private float jedaMin = 7f;
+    [SerializeField] private float jedaMaks = 11f;
     [Tooltip("Telegraf: jalur merah berkedip sebelum burung menyambar.")]
-    [SerializeField] private float waktuPeringatan = 1.6f;
-    [SerializeField] private float waktuDash = 0.45f;
+    [SerializeField] private float waktuPeringatan = 2.4f;
+    [SerializeField] private float waktuDash = 1f;
 
     [Header("Jalur serang (berpusat di posisi objek ini)")]
-    [SerializeField] private float lebarJalur = 20f;
-    [SerializeField] private float radiusSerang = 0.45f;
+    [SerializeField] private float lebarJalur = 14f;
+    [SerializeField] private float radiusSerang = 0.3f;
+    [Tooltip("Jalur digeser acak +/- nilai ini dari tinggi target, jadi tidak 'mengunci' tepat di pemain.")]
+    [SerializeField] private float acakTinggi = 0.8f;
     [Tooltip("Layer yang diperiksa jalur serang (pemain + penghalang).")]
     [SerializeField] private LayerMask lapisSerang = ~0;
 
@@ -87,6 +89,7 @@ public class BurungPelatuk : MonoBehaviourPunCallbacks, IBisaDistun
             }
 
             if (!TryPilihTarget(out float y)) continue;
+            y += Random.Range(-acakTinggi, acakTinggi);
 
             int arah = Random.value < 0.5f ? -1 : 1;
             photonView.RPC(nameof(RPC_Serang), RpcTarget.All, y, arah, UtilJaringan.Jam);
@@ -154,8 +157,9 @@ public class BurungPelatuk : MonoBehaviourPunCallbacks, IBisaDistun
 
         TampilkanBar(awal, akhir, false);
 
-        // Fase sambaran. Dampak dievaluasi sekali di tengah sambaran.
-        bool sudahEvaluasi = false;
+        // Fase sambaran: kontak diperiksa sepanjang jalur; yang PERTAMA disentuh burung menerima dampak.
+        bool sudahKena = false;
+        Vector3 sebelumnya = awal;
         while (!dibatalkan)
         {
             float p = (float)((UtilJaringan.Jam - tDash) / waktuDash);
@@ -164,11 +168,8 @@ public class BurungPelatuk : MonoBehaviourPunCallbacks, IBisaDistun
             p = Mathf.Max(0f, p);
             model.position = Vector3.Lerp(awal, akhir, p);
 
-            if (!sudahEvaluasi && p >= 0.5f)
-            {
-                sudahEvaluasi = true;
-                EvaluasiSerangan(awal, akhir);
-            }
+            if (!sudahKena) sudahKena = CekKontak(sebelumnya, model.position);
+            sebelumnya = model.position;
 
             yield return null;
         }
@@ -222,41 +223,43 @@ public class BurungPelatuk : MonoBehaviourPunCallbacks, IBisaDistun
 
     // ---------------- Dampak (tiap client untuk pemain lokalnya) ----------------
 
-    private void EvaluasiSerangan(Vector3 awal, Vector3 akhir)
+    /// <summary>
+    /// Cek kontak burung sepanjang segmen gerak frame ini. Yang PERTAMA disentuh menentukan hasil:
+    /// benda dunia = sambaran terhenti, pemain = diproses. true bila sudah ada kontak.
+    /// </summary>
+    private bool CekKontak(Vector3 dari, Vector3 ke)
     {
-        if (Time.time < pingsanSampai) return;
+        if (Time.time < pingsanSampai) return false;
 
-        Vector3 arah = akhir - awal;
-        float panjang = arah.magnitude;
-        arah /= panjang;
+        Vector3 selisih = ke - dari;
+        float panjang = selisih.magnitude;
+        if (panjang < 0.0001f) return false;
 
         int jumlah = Physics.SphereCastNonAlloc(
-            awal, radiusSerang, arah, hits, panjang, lapisSerang, QueryTriggerInteraction.Ignore);
+            dari, radiusSerang, selisih / panjang, hits, panjang, lapisSerang, QueryTriggerInteraction.Ignore);
 
-        float jarakKorban = float.MaxValue;
-        float jarakPenghalang = float.MaxValue;
-        PlayerController korban = null;
-
+        float terdekat = float.MaxValue;
+        Collider kena = null;
         for (int i = 0; i < jumlah; i++)
         {
             Collider c = hits[i].collider;
             if (c.transform.IsChildOf(transform)) continue;
 
-            float jarak = hits[i].distance;
-            PlayerController p = c.GetComponentInParent<PlayerController>();
-
-            if (p == null)
+            if (hits[i].distance < terdekat)
             {
-                if (jarak < jarakPenghalang) jarakPenghalang = jarak; // benda dunia memblokir jalur
-            }
-            else if (jarak < jarakKorban)
-            {
-                jarakKorban = jarak;
-                korban = p;
+                terdekat = hits[i].distance;
+                kena = c;
             }
         }
 
-        if (korban == null || jarakPenghalang < jarakKorban) return; // meleset / terhalang
+        if (kena == null) return false;
+
+        PlayerController korban = kena.GetComponentInParent<PlayerController>();
+        if (korban == null)
+        {
+            DragonDebug.Log($"Burung terhalang oleh '{kena.name}'");
+            return true;
+        }
 
         DragonSkillNetwork dragon = korban.GetComponent<DragonSkillNetwork>();
         bool berbaja = dragon != null && dragon.IsAktif(DragonSkillType.SteelSkin);
@@ -271,11 +274,16 @@ public class BurungPelatuk : MonoBehaviourPunCallbacks, IBisaDistun
                     Distun(durasiPingsan, korban.transform.position);
             }
 
-            return;
+            return true;
         }
 
         if (korban.photonView.IsMine)
+        {
+            DragonDebug.Log($"Burung mengenai '{korban.name}': tim mati");
             korban.Mati();
+        }
+
+        return true;
     }
 
     // ---------------- IBisaDistun ----------------

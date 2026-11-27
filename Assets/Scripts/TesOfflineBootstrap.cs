@@ -15,6 +15,13 @@ public class TesOfflineBootstrap : MonoBehaviourPunCallbacks
 
     private void Start()
     {
+        // Setelah restart (scene dimuat ulang) room offline masih aktif: spawner harus tetap dinyalakan.
+        if (PhotonNetwork.InRoom)
+        {
+            AktifkanSpawner();
+            return;
+        }
+
         if (PhotonNetwork.IsConnected)
         {
             return;
@@ -23,12 +30,6 @@ public class TesOfflineBootstrap : MonoBehaviourPunCallbacks
         PhotonNetwork.OfflineMode = true;
         PhotonNetwork.NickName = "Tester";
         KarakterPemain.Set(karakterTes);
-
-        if (PhotonNetwork.InRoom)
-        {
-            AktifkanSpawner();
-            return;
-        }
 
         if (!PhotonNetwork.CreateRoom("tes"))
         {

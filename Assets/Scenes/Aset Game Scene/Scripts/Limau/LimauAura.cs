@@ -14,12 +14,15 @@ public class LimauAura : MonoBehaviour
 {
     private static readonly List<LimauAura> daftarAktif = new();
 
-    [Tooltip("Radius cahaya dan aura pengusir (unit dunia).")]
+    [Tooltip("Radius CAHAYA (unit dunia): seberapa jauh lorong terang.")]
     [SerializeField] private float radius = 6f;
+    [Tooltip("Radius PENGUSIR hama (unit dunia): lebih kecil dari cahaya supaya hama tidak kabur kejauhan.")]
+    [SerializeField] private float radiusPengusir = 3f;
 
     private LimauSkillNetwork jaringan;
 
     public float Radius => radius;
+    public float RadiusPengusir => radiusPengusir;
     public bool Menyala { get; private set; }
 
     public static IReadOnlyList<LimauAura> DaftarAktif => daftarAktif;
@@ -60,7 +63,7 @@ public class LimauAura : MonoBehaviour
 
     public bool Mencakup(Vector3 posisi)
     {
-        return (posisi - transform.position).sqrMagnitude <= radius * radius;
+        return (posisi - transform.position).sqrMagnitude <= radiusPengusir * radiusPengusir;
     }
 
     /// <summary>Aura menyala terdekat yang mencakup posisi tersebut.</summary>

@@ -1,201 +1,198 @@
+using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using System.Collections;
-using Photon.Pun;
+using UnityEngine.UI;
 
 public class MenuPauseSederhana : MonoBehaviour
 {
-    private bool terbuka;
-    private GUIStyle gayaJudul;
-    private GUIStyle gayaTombol;
-    private float musicVolume = 1f;
-    private float sfxVolume = 1f;
-    private bool musicMuted;
-    private bool sfxMuted;
-    private bool sedangRestart;
-    private bool musicMutedTerakhir;
-    private bool sfxMutedTerakhir;
+    [SerializeField] private GameObject panel;
+    [SerializeField] private Button resumeButton;
+    [SerializeField] private Button restartButton;
+    [SerializeField] private Button exitButton;
+    [SerializeField] private Slider musicSlider;
+    [SerializeField] private Slider sfxSlider;
+    [SerializeField] private Toggle musicMuteToggle;
+    [SerializeField] private Toggle sfxMuteToggle;
+
+    private bool initialized;
+    private TMP_Text labelTmp;
+    private Text labelLegacy;
+    private string labelAsli;
+
+    public bool IsReady => initialized;
 
     private void Awake()
     {
-        musicVolume = PlayerPrefs.GetFloat(GameAudio.MusicVolumePref, 1f);
-        sfxVolume = PlayerPrefs.GetFloat(GameAudio.SfxVolumePref, 1f);
-        musicMuted = PlayerPrefs.GetInt(GameAudio.MusicMutedPref, 0) == 1;
-        sfxMuted = PlayerPrefs.GetInt(GameAudio.SfxMutedPref, 0) == 1;
-        musicMutedTerakhir = musicMuted;
-        sfxMutedTerakhir = sfxMuted;
+        if (!ResolveUi())
+            return;
+
+        initialized = true;
+        panel.SetActive(false);
+        PlayerController.InputDikunci = false;
+    }
+
+    private void OnEnable()
+    {
+        if (!initialized)
+            return;
+
+        resumeButton.onClick.AddListener(Lanjut);
+        restartButton.onClick.AddListener(RestartStage);
+        exitButton.onClick.AddListener(Keluar);
+        musicSlider.onValueChanged.AddListener(TerapkanMusic);
+        sfxSlider.onValueChanged.AddListener(TerapkanSfx);
+        musicMuteToggle.onValueChanged.AddListener(TerapkanMuteMusic);
+        sfxMuteToggle.onValueChanged.AddListener(TerapkanMuteSfx);
+    }
+
+    private void Start()
+    {
+        if (!initialized)
+            return;
+
+        labelTmp = restartButton.GetComponentInChildren<TMP_Text>();
+        labelLegacy = restartButton.GetComponentInChildren<Text>();
+        labelAsli = labelTmp != null ? labelTmp.text : (labelLegacy != null ? labelLegacy.text : null);
+
+        GameAudio audio = GameAudio.Instance;
+        musicSlider.SetValueWithoutNotify(audio != null ? audio.MusicVolume : PlayerPrefs.GetFloat(GameAudio.MusicVolumePref, 0.15f));
+        sfxSlider.SetValueWithoutNotify(audio != null ? audio.SfxVolume : PlayerPrefs.GetFloat(GameAudio.SfxVolumePref, 0.15f));
+        musicMuteToggle.SetIsOnWithoutNotify(audio != null ? audio.IsMusicMuted : PlayerPrefs.GetInt(GameAudio.MusicMutedPref, 0) == 1);
+        sfxMuteToggle.SetIsOnWithoutNotify(audio != null ? audio.IsSfxMuted : PlayerPrefs.GetInt(GameAudio.SfxMutedPref, 0) == 1);
     }
 
     private void Update()
     {
+        if (!initialized)
+            return;
+
         if (Input.GetKeyDown(KeyCode.Escape))
-            AturPause(!terbuka);
+            AturPause(!panel.activeSelf);
+
+        if (panel.activeSelf)
+            PerbaruiLabelRestart();
     }
 
-    private void AturPause(bool buka)
+    private void PerbaruiLabelRestart()
     {
-        terbuka = buka;
-        PlayerController.InputDikunci = buka;
-        Time.timeScale = buka ? 0f : 1f;
+        if (labelAsli == null)
+            return;
+
+        PersetujuanRestart.Hitung(out int setuju, out int total);
+        string teks = setuju > 0 && total > 1 ? $"{labelAsli} ({setuju}/{total})" : labelAsli;
+
+        if (labelTmp != null) labelTmp.text = teks;
+        else if (labelLegacy != null) labelLegacy.text = teks;
     }
 
     private void OnDisable()
     {
-        Time.timeScale = 1f;
+        if (resumeButton != null) resumeButton.onClick.RemoveListener(Lanjut);
+        if (restartButton != null) restartButton.onClick.RemoveListener(RestartStage);
+        if (exitButton != null) exitButton.onClick.RemoveListener(Keluar);
+        if (musicSlider != null) musicSlider.onValueChanged.RemoveListener(TerapkanMusic);
+        if (sfxSlider != null) sfxSlider.onValueChanged.RemoveListener(TerapkanSfx);
+        if (musicMuteToggle != null) musicMuteToggle.onValueChanged.RemoveListener(TerapkanMuteMusic);
+        if (sfxMuteToggle != null) sfxMuteToggle.onValueChanged.RemoveListener(TerapkanMuteSfx);
+
         PlayerController.InputDikunci = false;
     }
 
-    private void TerapkanMusic()
+    private bool ResolveUi()
     {
-        if (GameAudio.Instance != null)
-            GameAudio.Instance.SetMusicVolume(musicVolume);
-        else
-            PlayerPrefs.SetFloat(GameAudio.MusicVolumePref, musicVolume);
-    }
-
-    private void TerapkanSfx()
-    {
-        if (GameAudio.Instance != null)
-            GameAudio.Instance.SetSfxVolume(sfxVolume);
-        else
-            PlayerPrefs.SetFloat(GameAudio.SfxVolumePref, sfxVolume);
-    }
-
-    private void TerapkanMuteMusic()
-    {
-        if (GameAudio.Instance != null)
-            GameAudio.Instance.SetMusicMuted(musicMuted);
-        else
+        if (panel == null)
         {
-            PlayerPrefs.SetInt(GameAudio.MusicMutedPref, musicMuted ? 1 : 0);
-            PlayerPrefs.Save();
-        }
-    }
-
-    private void TerapkanMuteSfx()
-    {
-        if (GameAudio.Instance != null)
-            GameAudio.Instance.SetSfxMuted(sfxMuted);
-        else
-        {
-            PlayerPrefs.SetInt(GameAudio.SfxMutedPref, sfxMuted ? 1 : 0);
-            PlayerPrefs.Save();
-        }
-    }
-
-    private void RestartStage()
-    {
-        sedangRestart = true;
-        StartCoroutine(RestartSetelahPause());
-    }
-
-    private IEnumerator RestartSetelahPause()
-    {
-        Time.timeScale = 1f;
-        PlayerController.InputDikunci = false;
-        PlayerController.PermainanSelesai = false;
-
-        PlayerController pemainLokal = null;
-        foreach (PlayerController pemain in FindObjectsByType<PlayerController>(
-                     FindObjectsSortMode.None))
-        {
-            if (pemain != null && pemain.photonView.IsMine)
+            foreach (Canvas canvas in FindObjectsByType<Canvas>(FindObjectsInactive.Include, FindObjectsSortMode.None))
             {
-                pemainLokal = pemain;
+                Transform kandidat = canvas.transform.Find("P_Pause");
+                if (kandidat == null)
+                    continue;
+
+                panel = kandidat.gameObject;
                 break;
             }
         }
 
-        if (pemainLokal != null)
+        if (panel == null)
+            return false;
+
+        resumeButton = Cari(resumeButton, "B_Resume");
+        restartButton = Cari(restartButton, "B_Restart");
+        exitButton = Cari(exitButton, "B_Exit");
+        musicSlider = Cari(musicSlider, "Slider");
+        sfxSlider = Cari(sfxSlider, "Slider_SFX");
+        musicMuteToggle = Cari(musicMuteToggle, "Toggle_MuteBGM");
+        sfxMuteToggle = Cari(sfxMuteToggle, "Toggle_MuteSFX");
+
+        if (resumeButton == null || restartButton == null || exitButton == null ||
+            musicSlider == null || sfxSlider == null ||
+            musicMuteToggle == null || sfxMuteToggle == null)
         {
-            pemainLokal.MintaRestartStage();
-        }
-        else
-        {
-            string namaScene = SceneManager.GetActiveScene().name;
-            if (PhotonNetwork.InRoom)
-                PhotonNetwork.LoadLevel(namaScene);
-            else
-                SceneManager.LoadScene(namaScene);
+            Debug.LogError("Pause Canvas belum lengkap. Pastikan P_Pause memiliki tiga tombol, dua slider, dan dua toggle mute.", this);
+            return false;
         }
 
-        yield break;
+        return true;
     }
 
-    private void OnGUI()
+    private T Cari<T>(T komponen, string nama) where T : Component
     {
-        if (!terbuka)
-            return;
+        if (komponen != null)
+            return komponen;
 
-        if (gayaJudul == null)
-        {
-            gayaJudul = new GUIStyle(GUI.skin.label)
-            {
-                alignment = TextAnchor.MiddleCenter,
-                fontSize = 28,
-                fontStyle = FontStyle.Bold
-            };
-        }
+        Transform anak = panel.transform.Find(nama);
+        return anak != null ? anak.GetComponent<T>() : null;
+    }
 
-        if (gayaTombol == null)
-        {
-            gayaTombol = new GUIStyle(GUI.skin.button)
-            {
-                fontSize = 18
-            };
-        }
+    // Multiplayer: pause hanya menampilkan menu, dunia tetap berjalan.
+    private void AturPause(bool buka)
+    {
+        panel.SetActive(buka);
+        PlayerController.InputDikunci = buka;
+    }
 
-        float lebar = 320f;
-        float tinggi = 390f;
-        Rect panel = new Rect(
-            (Screen.width - lebar) * 0.5f,
-            (Screen.height - tinggi) * 0.5f,
-            lebar,
-            tinggi);
+    private void Lanjut() => AturPause(false);
 
-        GUI.Box(panel, "");
-        GUI.Label(new Rect(panel.x, panel.y + 20f, panel.width, 40f), "PAUSE", gayaJudul);
+    private void TerapkanMusic(float volume)
+    {
+        if (GameAudio.Instance != null) GameAudio.Instance.SetMusicVolume(volume);
+        else SimpanFloat(GameAudio.MusicVolumePref, volume);
+    }
 
-        GUI.Label(new Rect(panel.x + 40f, panel.y + 70f, panel.width - 80f, 20f), "Volume BGM");
-        float nilaiMusic = GUI.HorizontalSlider(new Rect(panel.x + 40f, panel.y + 92f, panel.width - 80f, 18f), musicVolume, 0f, 1f);
-        if (Mathf.Abs(nilaiMusic - musicVolume) > 0.001f)
-        {
-            musicVolume = nilaiMusic;
-            TerapkanMusic();
-        }
+    private void TerapkanSfx(float volume)
+    {
+        if (GameAudio.Instance != null) GameAudio.Instance.SetSfxVolume(volume);
+        else SimpanFloat(GameAudio.SfxVolumePref, volume);
+    }
 
-        musicMuted = GUI.Toggle(new Rect(panel.x + 40f, panel.y + 112f, panel.width - 80f, 22f), musicMuted, "Mute BGM");
-        if (musicMuted != musicMutedTerakhir)
-        {
-            musicMutedTerakhir = musicMuted;
-            TerapkanMuteMusic();
-        }
+    private void TerapkanMuteMusic(bool muted)
+    {
+        if (GameAudio.Instance != null) GameAudio.Instance.SetMusicMuted(muted);
+        else SimpanInt(GameAudio.MusicMutedPref, muted ? 1 : 0);
+    }
 
-        GUI.Label(new Rect(panel.x + 40f, panel.y + 142f, panel.width - 80f, 20f), "Volume SFX");
-        float nilaiSfx = GUI.HorizontalSlider(new Rect(panel.x + 40f, panel.y + 164f, panel.width - 80f, 18f), sfxVolume, 0f, 1f);
-        if (Mathf.Abs(nilaiSfx - sfxVolume) > 0.001f)
-        {
-            sfxVolume = nilaiSfx;
-            TerapkanSfx();
-        }
+    private void TerapkanMuteSfx(bool muted)
+    {
+        if (GameAudio.Instance != null) GameAudio.Instance.SetSfxMuted(muted);
+        else SimpanInt(GameAudio.SfxMutedPref, muted ? 1 : 0);
+    }
 
-        sfxMuted = GUI.Toggle(new Rect(panel.x + 40f, panel.y + 184f, panel.width - 80f, 22f), sfxMuted, "Mute SFX");
-        if (sfxMuted != sfxMutedTerakhir)
-        {
-            sfxMutedTerakhir = sfxMuted;
-            TerapkanMuteSfx();
-        }
+    private static void SimpanFloat(string kunci, float nilai)
+    {
+        PlayerPrefs.SetFloat(kunci, Mathf.Clamp01(nilai));
+        PlayerPrefs.Save();
+    }
 
-        if (GUI.Button(new Rect(panel.x + 60f, panel.y + 218f, panel.width - 120f, 36f), "Lanjut", gayaTombol))
-            AturPause(false);
+    private static void SimpanInt(string kunci, int nilai)
+    {
+        PlayerPrefs.SetInt(kunci, nilai);
+        PlayerPrefs.Save();
+    }
 
-        if (!sedangRestart && GUI.Button(new Rect(panel.x + 60f, panel.y + 264f, panel.width - 120f, 36f), "Restart Stage", gayaTombol))
-            RestartStage();
+    private void RestartStage() => PersetujuanRestart.MintaAtauSetujui();
 
-        if (GUI.Button(new Rect(panel.x + 60f, panel.y + 350f, panel.width - 120f, 36f), "Keluar", gayaTombol))
-        {
-            Time.timeScale = 1f;
-            Application.Quit();
-        }
+    private void Keluar()
+    {
+        PlayerController.InputDikunci = false;
+        Application.Quit();
     }
 }

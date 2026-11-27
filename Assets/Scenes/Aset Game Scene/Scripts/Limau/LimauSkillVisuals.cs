@@ -1,15 +1,22 @@
+using System.Collections.Generic;
 using UnityEngine;
-
-/// <summary>
-/// LAYER VISUAL (LineRenderer + Light + VFX). Berjalan di SEMUA client dengan mendengarkan
-/// event LimauSkillNetwork, jadi pemain lokal dan remote melihat benang & cahaya yang sama.
-/// Tidak berisi logika gameplay. Semua referensi bersifat opsional (null-safe).
-/// </summary>
 public class LimauSkillVisuals : MonoBehaviour
 {
     [SerializeField] private LimauSkillNetwork jaringan;
     [SerializeField] private LimauSilkHandler sutra;
     [SerializeField] private LimauAura aura;
+
+    [Header("Animator (opsional)")]
+    [SerializeField] private Animator animator;
+    [SerializeField] private string paramInflated = "IsInflated";   // bool
+    [SerializeField] private string paramGlowing = "IsGlowing";     // bool
+    [SerializeField] private string paramSwinging = "IsSwinging";   // bool (sutra ke titik gantung / jangkar)
+    [SerializeField] private string paramPulling = "IsPulling";     // bool (sutra menarik teman)
+    [SerializeField] private string triggerSilkShoot = "SilkShoot"; // trigger
+    [SerializeField] private string paramAimY = "AimY";             // float -1 (bawah) .. 1 (atas)
+
+    private readonly HashSet<int> paramAda = new();
+    private int hInflated, hGlowing, hSwinging, hPulling, hShoot, hAimY;
 
     [Header("Sutra (LineRenderer)")]
     [SerializeField] private LineRenderer garis;
@@ -36,6 +43,19 @@ public class LimauSkillVisuals : MonoBehaviour
         if (jaringan == null) jaringan = GetComponent<LimauSkillNetwork>();
         if (sutra == null) sutra = GetComponent<LimauSilkHandler>();
         if (aura == null) aura = GetComponent<LimauAura>();
+        if (animator == null) animator = GetComponentInChildren<Animator>();
+
+        hInflated = Animator.StringToHash(paramInflated);
+        hGlowing = Animator.StringToHash(paramGlowing);
+        hSwinging = Animator.StringToHash(paramSwinging);
+        hPulling = Animator.StringToHash(paramPulling);
+        hShoot = Animator.StringToHash(triggerSilkShoot);
+        hAimY = Animator.StringToHash(paramAimY);
+
+        // Cache parameter yang benar-benar ada agar tidak spam warning.
+        if (animator != null)
+            foreach (AnimatorControllerParameter p in animator.parameters)
+                paramAda.Add(p.nameHash);
 
         if (garis != null)
         {
@@ -86,6 +106,9 @@ public class LimauSkillVisuals : MonoBehaviour
 
     private void SaatSkillAktif(LimauSkillType tipe, bool aktif)
     {
+        if (tipe == LimauSkillType.Inflate) SetBool(hInflated, aktif);
+        if (tipe == LimauSkillType.Bioluminesensi) SetBool(hGlowing, aktif);
+
         if (tipe != LimauSkillType.Bioluminesensi) return;
 
         intensitasTarget = aktif ? intensitasMaks : 0f;
@@ -100,6 +123,16 @@ public class LimauSkillVisuals : MonoBehaviour
     private void SaatSutraTerpasang(Vector3 titik, Transform target)
     {
         sutraAktif = true;
+
+        // Target null = berayun (titik gantung / Dragon Steel Skin sebagai jangkar); non-null = menarik teman.
+        SetBool(hSwinging, target == null);
+        SetBool(hPulling, target != null);
+        if (animator != null && paramAda.Contains(hShoot)) animator.SetTrigger(hShoot);
+        if (sutra != null && animator != null && paramAda.Contains(hAimY))
+        {
+            Vector3 selisihBidik = (target != null ? target.position : titik) - sutra.AsalSutra;
+            animator.SetFloat(hAimY, selisihBidik.sqrMagnitude > 0.0001f ? Mathf.Clamp(selisihBidik.normalized.y, -1f, 1f) : 0f);
+        }
         titikTujuan = titik;
         targetIkut = target;
         panjangTampil = 0f; // mulai animasi meluncur
@@ -111,6 +144,8 @@ public class LimauSkillVisuals : MonoBehaviour
     private void SaatSutraLepas()
     {
         sutraAktif = false;
+        SetBool(hSwinging, false);
+        SetBool(hPulling, false);
         targetIkut = null;
 
         if (garis != null) garis.enabled = false;
@@ -194,5 +229,11 @@ public class LimauSkillVisuals : MonoBehaviour
         if (shader != null) renderer.material = new Material(shader);
 
         return partikel;
+    }
+
+    private void SetBool(int hash, bool nilai)
+    {
+        if (animator != null && paramAda.Contains(hash))
+            animator.SetBool(hash, nilai);
     }
 }

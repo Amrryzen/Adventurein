@@ -76,7 +76,15 @@ public class ManajerJaringan : MonoBehaviourPunCallbacks
         if (string.IsNullOrEmpty(namaRoom))
             namaRoom = $"Room {Random.Range(1000, 9999)}";
 
-        var options = new RoomOptions { MaxPlayers = (byte)AmbilMaxPemain() };
+        var options = new RoomOptions
+        {
+            MaxPlayers = (byte)AmbilMaxPemain(),
+            CustomRoomProperties = new ExitGames.Client.Photon.Hashtable
+            {
+                { PersetujuanRestart.KunciPermintaanRoom, string.Empty },
+                { PersetujuanRestart.KunciPemintaRoom, 0 }
+            }
+        };
         PhotonNetwork.CreateRoom(namaRoom, options);
     }
 

@@ -1,46 +1,69 @@
+
+using System;
 using Photon.Pun;
 using UnityEngine;
 
-/// <summary>
-/// GDD Level 3: "rintangan angin kencang yang datang berkala, mewajibkan pemain bersembunyi atau
-/// berlindung di balik Ulat Naga".
-///
-/// - Jadwal dihitung dari jam jaringan (UtilJaringan.Jam): semua client melihat gelombang angin yang sama
-///   TANPA RPC. Ada fase peringatan (daun mulai beterbangan) sebelum angin kencang.
-/// - Tiap client hanya mendorong PEMAIN LOKALnya (fisikanya dijalankan pemilik).
-/// - Terlindung bila di antara pemain dan arah datangnya angin ada: Dragon yang Steel Skin-nya aktif
-///   (status tersinkron lewat DragonSkillNetwork) atau benda padat dunia.
-/// Butuh patch PlayerController: properti DorongLuarX (lihat PATCH_PlayerController.txt).
-/// Pasang di GameObject dengan Collider trigger yang menutupi area berangin.
-/// </summary>
 [RequireComponent(typeof(Collider))]
 public class AnginBerkala : MonoBehaviour
 {
-    [Header("Jadwal (sinkron lewat jam jaringan)")]
-    [SerializeField, Min(0.5f)] private float jedaAntarAngin = 5f;
-    [SerializeField, Min(0.5f)] private float durasiAngin = 3.5f;
-    [SerializeField, Min(0f)] private float waktuPeringatan = 1.5f;
-    [SerializeField] private float offsetFase = 0f;
+    [Serializable]
+    private class PengaturanJadwal
+    {
+        [Min(0.5f)] public float interval = 5f;
+        [Min(0.5f)] public float durasi = 3.5f;
+        [Min(0f)] public float peringatan = 1.5f;
+        public float offset = 0f;
+    }
 
-    [Header("Dorongan")]
-    [Tooltip("+1 = angin bertiup ke kanan, -1 = ke kiri.")]
-    [SerializeField] private float arahX = 1f;
-    [SerializeField] private float kecepatanAngin = 7f;
-    [Tooltip("Newton. Dipakai saat kontrol pemain dilepas (mis. sedang berayun dengan sutra).")]
-    [SerializeField] private float gayaSaatBerayun = 25f;
-    [SerializeField] private float waktuNaik = 0.5f;
+    [Serializable]
+    private class PengaturanKekuatan
+    {
+        [Tooltip("Arah angin: 1 = kanan, -1 = kiri.")]
+        [Range(-1, 1)] public float arah = 1f;
 
-    [Header("Perlindungan")]
-    [SerializeField] private float jarakLindung = 3f;
-    [Tooltip("Layer yang dianggap penghalang angin. Benda dekoratif ber-collider di layer ini ikut melindungi.")]
-    [SerializeField] private LayerMask lapisPenghalang = ~0;
+        [Min(0f)] public float kecepatan = 7f;
+        [Min(0f)] public float doronganSaatBerayun = 25f;
+        [Min(0f)] public float waktuTransisi = 0.5f;
+    }
+
+    [Serializable]
+    private class PengaturanPerlindungan
+    {
+        [Min(0f)] public float jarakDeteksi = 12f;
+        public LayerMask layerPenghalang = ~0;
+    }
+
+    [Serializable]
+    private class PengaturanVisual
+    {
+        [Min(0f)] public float lebar = 12f;
+        [Min(0f)] public float tinggi = 5f;
+    }
+
+    [Header("1. Jadwal Angin")]
+    [SerializeField] private PengaturanJadwal jadwal = new PengaturanJadwal();
+
+    [Header("2. Kekuatan Angin")]
+    [SerializeField] private PengaturanKekuatan kekuatan = new PengaturanKekuatan();
+
+    [Header("3. Perlindungan")]
+    [SerializeField] private PengaturanPerlindungan perlindungan = new PengaturanPerlindungan();
+
+    [Header("4. Visual Angin")]
+    [SerializeField] private PengaturanVisual visual = new PengaturanVisual();
 
     private PlayerController pemain;
     private CapsuleCollider kolPemain;
     private Rigidbody rbPemain;
+    private Collider zona;
+
     private bool sedangMendorong;
+    private bool terlindung;
+
     private ParticleSystem partikel;
     private readonly RaycastHit[] hits = new RaycastHit[8];
+
+    private float Arah => kekuatan.arah >= 0f ? 1f : -1f;
 
     private void Reset()
     {
@@ -49,108 +72,231 @@ public class AnginBerkala : MonoBehaviour
 
     private void Awake()
     {
-        Bounds b = GetComponent<Collider>().bounds;
-        float kecepatan = Mathf.Max(0.5f, kecepatanAngin);
+        zona = GetComponent<Collider>();
 
-        partikel = FabrikEfek.BuatPartikel("Angin Daun", transform, new Color(0.7f, 0.9f, 0.5f, 0.85f), 0.16f, 1f, 0f, 0f, 0f);
-        partikel.transform.position = new Vector3(b.center.x - Mathf.Sign(arahX) * b.extents.x, b.center.y, b.center.z);
+        float kecepatan = Mathf.Max(0.5f, kekuatan.kecepatan);
+
+        partikel = FabrikEfek.BuatPartikel(
+            "Angin Daun",
+            transform,
+            new Color(0.7f, 0.9f, 0.5f, 0.85f),
+            0.16f, 1f, 0f, 0f, 0f
+        );
 
         ParticleSystem.MainModule utama = partikel.main;
-        utama.startLifetime = Mathf.Max(1f, b.size.x / kecepatan);
+        utama.startLifetime = Mathf.Max(0.5f, visual.lebar / kecepatan);
 
         ParticleSystem.ShapeModule bentuk = partikel.shape;
         bentuk.shapeType = ParticleSystemShapeType.Box;
-        bentuk.scale = new Vector3(0.1f, Mathf.Max(0.5f, b.size.y), 0.1f);
+        bentuk.scale = new Vector3(
+            0.1f,
+            Mathf.Max(0.5f, visual.tinggi),
+            0.1f
+        );
 
-        ParticleSystem.VelocityOverLifetimeModule kecepatanPartikel = partikel.velocityOverLifetime;
-        kecepatanPartikel.enabled = true;
-        kecepatanPartikel.space = ParticleSystemSimulationSpace.World;
-        kecepatanPartikel.x = new ParticleSystem.MinMaxCurve(Mathf.Sign(arahX) * kecepatan * 0.9f, Mathf.Sign(arahX) * kecepatan * 1.2f);
-        kecepatanPartikel.y = new ParticleSystem.MinMaxCurve(-0.3f, 0.3f);
-        kecepatanPartikel.z = new ParticleSystem.MinMaxCurve(0f, 0f);
+        ParticleSystem.VelocityOverLifetimeModule vel =
+            partikel.velocityOverLifetime;
+
+        vel.enabled = true;
+        vel.space = ParticleSystemSimulationSpace.World;
+
+        vel.x = new ParticleSystem.MinMaxCurve(
+            Arah * kecepatan * 0.9f,
+            Arah * kecepatan * 1.2f
+        );
+
+        vel.y = new ParticleSystem.MinMaxCurve(-0.3f, 0.3f);
+        vel.z = new ParticleSystem.MinMaxCurve(0f, 0f);
     }
-
-    // ---------------- Jadwal ----------------
 
     private float Fase()
     {
-        float siklus = jedaAntarAngin + durasiAngin;
-        return (float)((UtilJaringan.Jam + offsetFase) % siklus);
+        float siklus = jadwal.interval + jadwal.durasi;
+
+        return Mathf.Repeat(
+            (float)UtilJaringan.Jam + jadwal.offset,
+            siklus
+        );
     }
 
-    private float Kekuatan(float fase)
+    private float KekuatanAngin(float fase)
     {
-        float sejak = fase - jedaAntarAngin;
-        if (sejak < 0f) return 0f;
+        float sejakMulai = fase - jadwal.interval;
 
-        float naik = waktuNaik > 0f ? Mathf.Clamp01(sejak / waktuNaik) : 1f;
-        float turun = Mathf.Clamp01((durasiAngin - sejak) / 0.4f);
+        if (sejakMulai < 0f)
+            return 0f;
+
+        float naik = kekuatan.waktuTransisi > 0f
+            ? Mathf.Clamp01(sejakMulai / kekuatan.waktuTransisi)
+            : 1f;
+
+        float turun = Mathf.Clamp01(
+            (jadwal.durasi - sejakMulai) / 0.4f
+        );
+
         return Mathf.Min(naik, turun);
     }
 
     private void Update()
     {
+        if (pemain == null)
+        {
+            FabrikEfek.AturLaju(partikel, 0f);
+            return;
+        }
+
         float fase = Fase();
-        bool berhembus = fase >= jedaAntarAngin;
-        bool peringatan = !berhembus && fase >= jedaAntarAngin - waktuPeringatan;
 
-        FabrikEfek.AturLaju(partikel, berhembus ? 36f : (peringatan ? 6f : 0f));
+        bool berhembus = fase >= jadwal.interval;
 
-        if (pemain != null && berhembus)
-            CameraGetar.Getar(0.035f, 0.12f); // getaran halus saat angin menerpa pemain lokal
+        bool peringatan =
+            !berhembus &&
+            fase >= jadwal.interval - jadwal.peringatan;
+
+        Vector3 posisiPemain = pemain.transform.position;
+        Bounds batasZona = zona.bounds;
+
+        float x = Mathf.Clamp(
+            posisiPemain.x - Arah * visual.lebar * 0.5f,
+            batasZona.min.x,
+            batasZona.max.x
+        );
+
+        partikel.transform.position = new Vector3(
+            x,
+            posisiPemain.y,
+            posisiPemain.z
+        );
+
+        float laju = berhembus ? 36f : (peringatan ? 6f : 0f);
+
+        FabrikEfek.AturLaju(
+            partikel,
+            terlindung ? 0f : laju
+        );
+
+        if (berhembus && !terlindung)
+        {
+            CameraGetar.Getar(0.035f, 0.12f);
+        }
     }
-
-    // ---------------- Fisika ----------------
 
     private void FixedUpdate()
     {
         bool mendorong = false;
+        terlindung = false;
 
-        if (pemain != null && kolPemain != null && kolPemain.enabled)
+        if (pemain != null &&
+            kolPemain != null &&
+            kolPemain.enabled)
         {
-            float kekuatan = Kekuatan(Fase());
-            if (kekuatan > 0f && !Terlindung())
+            float kekuatanSaatIni = KekuatanAngin(Fase());
+
+            if (kekuatanSaatIni > 0f)
             {
-                if (pemain.KontrolFisikaDilepas)
+                terlindung = Terlindung();
+
+                if (!terlindung)
                 {
-                    rbPemain.AddForce(new Vector3(Mathf.Sign(arahX) * gayaSaatBerayun * kekuatan, 0f, 0f), ForceMode.Force);
-                }
-                else
-                {
-                    pemain.DorongLuarX = Mathf.Sign(arahX) * kecepatanAngin * kekuatan;
-                    mendorong = true;
+                    if (pemain.KontrolFisikaDilepas)
+                    {
+                        if (rbPemain != null)
+                        {
+                            rbPemain.AddForce(
+                                new Vector3(
+                                    Arah *
+                                    kekuatan.doronganSaatBerayun *
+                                    kekuatanSaatIni,
+                                    0f,
+                                    0f
+                                ),
+                                ForceMode.Force
+                            );
+                        }
+                    }
+                    else
+                    {
+                        pemain.DorongLuarX =
+                            Arah *
+                            kekuatan.kecepatan *
+                            kekuatanSaatIni;
+
+                        mendorong = true;
+                    }
                 }
             }
         }
 
         if (!mendorong && sedangMendorong)
+        {
             HentikanDorongan();
+        }
 
         sedangMendorong = mendorong;
     }
 
     private bool Terlindung()
     {
-        Vector3 asal = kolPemain.bounds.center;
-        Vector3 keSumber = new Vector3(-Mathf.Sign(arahX), 0f, 0f);
+        Bounds bp = kolPemain.bounds;
+        Bounds bz = zona.bounds;
 
-        int jumlah = Physics.RaycastNonAlloc(asal, keSumber, hits, jarakLindung, lapisPenghalang, QueryTriggerInteraction.Ignore);
+        float tepiHulu = Arah > 0f
+            ? bz.min.x
+            : bz.max.x;
+
+        float jarak = Mathf.Min(
+            perlindungan.jarakDeteksi,
+            Mathf.Abs(bp.center.x - tepiHulu)
+        );
+
+        if (jarak < 0.05f)
+            return false;
+
+        Vector3 setengah = new Vector3(
+            0.05f,
+            bp.extents.y * 0.8f,
+            bp.extents.z * 0.8f
+        );
+
+        Vector3 keHulu = new Vector3(-Arah, 0f, 0f);
+
+        int jumlah = Physics.BoxCastNonAlloc(
+            bp.center,
+            setengah,
+            keHulu,
+            hits,
+            Quaternion.identity,
+            jarak,
+            perlindungan.layerPenghalang,
+            QueryTriggerInteraction.Ignore
+        );
+
         for (int i = 0; i < jumlah; i++)
         {
-            Collider c = hits[i].collider;
-            if (c.transform.IsChildOf(pemain.transform)) continue;
+            RaycastHit h = hits[i];
+            Collider c = h.collider;
 
-            DragonSkillNetwork dragon = c.GetComponentInParent<DragonSkillNetwork>();
+            if (c.transform.IsChildOf(pemain.transform))
+                continue;
+
+            if (h.normal.y > 0.7f)
+                continue;
+
+            DragonSkillNetwork dragon =
+                c.GetComponentInParent<DragonSkillNetwork>();
+
             if (dragon != null)
             {
-                // Dragon hanya melindungi saat Steel Skin aktif; kalau tidak, dia 'tembus pandang' bagi angin.
-                if (dragon.IsAktif(DragonSkillType.SteelSkin)) return true;
+                if (dragon.IsAktif(DragonSkillType.SteelSkin))
+                    return true;
+
                 continue;
             }
 
-            if (c.GetComponentInParent<PlayerController>() != null) continue; // pemain lain tidak melindungi
+            if (c.GetComponentInParent<PlayerController>() != null)
+                continue;
 
-            return true; // benda padat dunia
+            return true;
         }
 
         return false;
@@ -158,13 +304,17 @@ public class AnginBerkala : MonoBehaviour
 
     private void HentikanDorongan()
     {
-        if (pemain != null) pemain.DorongLuarX = 0f;
+        if (pemain != null)
+            pemain.DorongLuarX = 0f;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        PlayerController p = other.GetComponentInParent<PlayerController>();
-        if (p == null || !p.photonView.IsMine) return;
+        PlayerController p =
+            other.GetComponentInParent<PlayerController>();
+
+        if (p == null || !p.photonView.IsMine)
+            return;
 
         pemain = p;
         kolPemain = p.GetComponent<CapsuleCollider>();
@@ -173,29 +323,49 @@ public class AnginBerkala : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        PlayerController p = other.GetComponentInParent<PlayerController>();
-        if (p == null || p != pemain) return;
+        PlayerController p =
+            other.GetComponentInParent<PlayerController>();
+
+        if (p == null || p != pemain)
+            return;
 
         HentikanDorongan();
+
         sedangMendorong = false;
+        terlindung = false;
+
         pemain = null;
+        kolPemain = null;
+        rbPemain = null;
     }
 
     private void OnDisable()
     {
         HentikanDorongan();
+
         sedangMendorong = false;
+        terlindung = false;
+
         pemain = null;
+        kolPemain = null;
+        rbPemain = null;
     }
 
     private void OnDrawGizmos()
     {
         Collider c = GetComponent<Collider>();
-        if (c == null) return;
+
+        if (c == null)
+            return;
 
         Gizmos.color = new Color(0.5f, 0.9f, 1f, 0.9f);
+
         Vector3 pusat = c.bounds.center;
-        Vector3 ujung = pusat + Vector3.right * (Mathf.Sign(arahX) * Mathf.Min(c.bounds.extents.x, 3f));
+
+        Vector3 ujung = pusat +
+            Vector3.right *
+            (Mathf.Sign(kekuatan.arah) * Mathf.Min(c.bounds.extents.x, 3f));
+
         Gizmos.DrawLine(pusat, ujung);
         Gizmos.DrawSphere(ujung, 0.2f);
     }
